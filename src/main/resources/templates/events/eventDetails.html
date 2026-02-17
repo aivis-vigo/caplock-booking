@@ -39,29 +39,28 @@
     </style>
 </head>
 <body>
-<h1>Bookings</h1>
-<a th:href="@{/bookings/form}" class="btn btn-add">Add New Booking</a>
+<h1>Events</h1>
+<a href="/events/details/form" class="btn btn-add">Edit Event</a>
 
-<table th:if="${bookings != null and bookings.size() > 0}">
+<table th:if="${eventList != null and eventList.size() > 0}">
     <thead>
     <tr>
-        <th>ID</th>
-        <th>User Name</th>
-        <th>Event</th>
-        <th>Booking Date</th>
-        <th>Status</th>
+        <th>getBookedSeats</th>
+        <th>getBookingStartTime</th>
+        <th>getCapacity</th>
+        <th>getDescription</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="booking : ${bookings}">
-        <td th:text="${booking.id}"></td>
-        <td th:text="${booking.userId}"></td>
-        <td th:text="${booking.eventTitle}"></td>
-
+    <tr th:each="event : ${eventList}">
+        <td th:text="${event.getBookedSeats()()}"></td>
+        <td th:text="${event.getBookingStartTime()}"></td>
+        <td th:text="${event.getCapacity()}"></td>
+        <td th:text="${event.getDescription()}"></td>
     </tr>
     </tbody>
 </table>
 
-<p th:if="${bookings == null or bookings.size() == 0}">No bookings available.</p>
+<p th:if="${eventList != null and eventList.size() == 0}">No events available.</p>
 </body>
 </html>

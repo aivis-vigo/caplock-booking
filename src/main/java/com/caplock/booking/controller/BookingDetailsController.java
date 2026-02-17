@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/bookings/details")
 public class BookingDetailsController {
@@ -16,18 +18,18 @@ public class BookingDetailsController {
 
     @GetMapping("/view/{id}")
     public String getDetails(@PathVariable long id, Model model) {
-        model.addAttribute("booking-details", bookingService.getDetails(id));
-        return "bookings/Details";
+        model.addAttribute("bookingDetails", List.of(bookingService.getDetails(id)));
+        return "bookings/bookingDetails";
     }
 
 
     @PostMapping("/delete/{id}")
     public String deleteBooking(@PathVariable long id) {
         if (bookingService.cancelBooking(id))
-            return "redirect:/bookings/Bookings";
+            return "redirect:/bookings/bookings";
         else {
             //show error
-            return "redirect:/bookings/Details";
+            return "redirect:/bookings/bookingDetails";
         }
     }
 }

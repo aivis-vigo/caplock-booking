@@ -31,7 +31,7 @@ public class BookingController {
         return FormShower.showForm(model, safeId, bookingService::getBookingById, BookingDto.class);
     }
 
-    @PostMapping("/submit-form")
+    @PostMapping("/submitForm")
     public String setBooking(@ModelAttribute("booking") BookingDto booking) {
         var result = bookingService.setNewBooking(booking);
 

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.caplock.booking.controller.helper.FormShower.showForm;
 
 @Controller
@@ -21,17 +23,17 @@ public class EventDetailsController {
 
     @GetMapping("/view/{id}")
     public String getDetails(@PathVariable long id, Model model) {
-        model.addAttribute("event-details", eventService.getDetails(id));
-        return "events/Details";
+        model.addAttribute("eventDetails", List.of(eventService.getDetails(id).getDescription()));
+        return "events/eventDetails";
     }
 
     @PostMapping("/delete/{id}")
     public String deleteBooking(@PathVariable long id) {
         eventService.deleteEvent(id);
-        return "redirect:/events/Events";
+        return "redirect:/events/events";
     }
 
-    @GetMapping({"/event-form", "/event-form/{id}"})
+    @GetMapping({"/form", "/form/{id}"})
     public String form(Model model, @PathVariable(required = false) Long id) {
         long safeId = (id == null) ? -1 : id;
         return FormShower.showForm(model, safeId, eventService::getEventById, EventDto.class);
@@ -40,7 +42,14 @@ public class EventDetailsController {
     @PutMapping("/update/{id}")
     public String putEvent(@ModelAttribute EventDto event, @PathVariable long id) {
         // get user id from jwt
-        eventService.updateEvent(id, event);
-        return "redirect:events/Events";
+
+
+
+        if (   eventService.updateEvent(id, event))
+            return "redirect:events/events";
+        else {
+            //show error
+            return "redirect:events/eventDetails";
+        }
     }
 }

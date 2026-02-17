@@ -20,13 +20,13 @@ public class FormShower {
         String view;
         if (dtoClass == EventDto.class) {
             noun = "event";
-            view = "events/Event-form";
+            view = "events/eventForm";
         } else if(dtoClass== BookingDto.class) {
             noun = "booking";
-            view = "bookings/Booking-form";
+            view = "bookings/bookingForm";
         }else{
             noun = "waitList";
-            view = "waitLists/WaitList-form";
+            view = "waitLists/waitListForm";
         }
 
         model.addAttribute("formName", editing ? "Edit" : "Add");
