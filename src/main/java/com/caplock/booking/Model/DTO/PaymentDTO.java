@@ -1,7 +1,15 @@
 package com.caplock.booking.Model.DTO;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentDTO {
     private Long id;
     private int bookingId;
@@ -9,45 +17,4 @@ public class PaymentDTO {
     private String paymentMethod;
     private LocalDate paidAt;
 
-    public PaymentDTO(Long id, int bookingId, int status, String paymentMethod, LocalDate paidAt) {
-        this.id = id;
-        this.bookingId = bookingId;
-        this.status = status;
-        this.paymentMethod = paymentMethod;
-        this.paidAt = paidAt;
-    }
-    public PaymentDTO() {
-
-    }
-
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public int getBookingId() {
-        return bookingId;
-    }
-    public void setBookingId(int bookingId) {
-        this.bookingId = bookingId;
-    }
-    public int getStatus() {
-        return status;
-    }
-    public void setStatus(int status) {
-        this.status = status;
-    }
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-    public LocalDate getPaidAt() {
-        return paidAt;
-    }
-    public void setPaidAt(LocalDate paidAt) {
-        this.paidAt = paidAt;
-    }
 }
