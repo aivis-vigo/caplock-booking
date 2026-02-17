@@ -20,12 +20,12 @@ public class EventController {
 
     @GetMapping
     public String getAllEvents(Model model) {
-        model.addAttribute("event-list", eventService.getAllEvents());
+        model.addAttribute("eventList", eventService.getAllEvents());
         return "events/Events";
     }
 
     // maybe will be bugged, two same paths
-    @GetMapping({"/event-form", "/event-form/{id}"})
+    @GetMapping({"/form", "/form/{id}"})
     public String form(Model model, @PathVariable(required = false) Long id) {
         long safeId = (id == null) ? -1 : id;
         return FormShower.showForm(model, safeId, eventService::getEventById, EventDto.class);

@@ -25,18 +25,6 @@ public class BookingController {
         return "bookings/bookings";
     }
 
-    @GetMapping("/submit-edit-form/{id}")
-    public String getBookingForm(Model model, @PathVariable long id) {
-        if (bookingService.getBookingById(id) != null) {
-            model.addAttribute("Form-name", "Edit");
-            model.addAttribute("Form-button", "Update");
-        } else {
-            model.addAttribute("Form-name", "Add");
-            model.addAttribute("Form-button", "Place booking");
-        }
-        return "bookings/booking-form";
-    }
-
     @GetMapping({"/form", "/form/{id}"})
     public String form(Model model, @PathVariable(required = false) Long id) {
         long safeId = (id == null) ? -1 : id;

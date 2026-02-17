@@ -39,10 +39,10 @@
     </style>
 </head>
 <body>
-<h1>Bookings</h1>
-<a href="/bookings/form" class="btn btn-add">Add New Booking</a>
+<h1>Events</h1>
+<a href="/events/form" class="btn btn-add">Add New Event</a>
 
-<table th:if="${bookings != null and bookings.size() > 0}">
+<table th:if="${eventList != null and eventList.size() > 0}">
     <thead>
     <tr>
         <th>ID</th>
@@ -53,15 +53,15 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="booking : ${bookings}">
-        <td th:text="${booking.id}"></td>
-        <td th:text="${booking.userId}"></td>
-        <td th:text="${booking.eventTitle}"></td>
+    <tr th:each="event : ${eventList}">
+        <td th:text="${event.getCategory()}"></td>
+        <td th:text="${event.getTitle()}"></td>
+        <td th:text="${event.getDuration()}"></td>
 
     </tr>
     </tbody>
 </table>
 
-<p th:if="${bookings == null or bookings.size() == 0}">No bookings available.</p>
+<p th:if="${eventList != null and eventList.size() == 0}">No events available.</p>
 </body>
 </html>
