@@ -19,6 +19,9 @@ public class EventService implements IEventService {
     @Autowired
     private IEventRepository eventRepo;
 
+//    @Autowired
+//    private ICategoryService categoryService;
+
     @Override
     public EventDetailsDto getDetails(long id) {
         return null;
@@ -27,7 +30,37 @@ public class EventService implements IEventService {
     @Override
     public Collection<EventDto> getAllEvents() {
         return eventRepo.getAllEvents().stream()
-                .map(dao -> (EventDto) Mapper.mapDaoToDto(dao, EventDto.class))
+                .map(dao -> Mapper.combine(EventDto.class, dao/**,categoryService.getCategoryByName(name)*/))
+                .toList();
+    }
+
+    @Override
+    public EventDto getEventById(long id) {
+        var dao = eventRepo.getEventById(id);
+        return  Mapper.combine(EventDto.class, dao/**,categoryService.getCategoryByName(name)*/);
+    }
+
+    @Override
+    public boolean setEvent(EventDto dto) {
+        return eventRepo.setEvent( Mapper.splitOne(dto, EventDao.class));
+    }
+
+    @Override
+    public boolean updateEvent(long id, EventDto dto) {
+        dto.setId(id);
+        return eventRepo.updateEvent(id,Mapper.splitOne(dto, EventDao.class));
+    }
+
+    @Override
+    public boolean deleteEvent(long id) {
+        return eventRepo.deleteEvent(id);
+    }
+
+
+    @Override
+    public Collection<EventDto> getEventsByStatus(StatusEventEnum status) {
+        return eventRepo.getEventsByStatus(status).stream()
+                .map(dao -> Mapper.combine(EventDto.class, dao/**,categoryService.getCategoryByName(name)*/))
                 .toList();
     }
 
@@ -42,12 +75,6 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public EventDto getEventById(long id) {
-        var dao = eventRepo.getEventById(id);
-        return (EventDto) Mapper.mapDaoToDto(dao, EventDto.class);
-    }
-
-    @Override
     public Collection<EventDto> getEventsByDate(LocalDate date) {
         return List.of();
     }
@@ -58,30 +85,7 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public boolean setEvent(EventDto dto) {
-        return eventRepo.setEvent((EventDao) Mapper.mapDtoToDao(dto, EventDao.class));
-    }
-
-    @Override
-    public boolean updateEvent(long id, EventDto dto) {
-        dto.setId(id);
-        return eventRepo.updateEvent(id,(EventDao) Mapper.mapDtoToDao(dto, EventDao.class));
-    }
-
-    @Override
-    public boolean deleteEvent(long id) {
-        return eventRepo.deleteEvent(id);
-    }
-
-    @Override
     public boolean deleteByTitle(String title) {
         return false;
-    }
-
-    @Override
-    public Collection<EventDto> getEventsByStatus(StatusEventEnum status) {
-        return eventRepo.getEventsByStatus(status).stream()
-                .map(dao -> (EventDto) Mapper.mapDaoToDto(dao, EventDto.class))
-                .toList();
     }
 }

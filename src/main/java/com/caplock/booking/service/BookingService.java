@@ -19,7 +19,7 @@ public class BookingService implements IBookingService {
     @Autowired
     private IBookingRepository bookingRepo;
     @Autowired
-    private IEventRepository eventRepo;
+    private IEventService eventService;
 
     @Override
     public BookingDetailsDto getDetails(long id) {
@@ -29,36 +29,36 @@ public class BookingService implements IBookingService {
     @Override
     public BookingDto getBookingById(long id) {
         var dao = bookingRepo.getBookingById(id);
-        return (BookingDto) Mapper.mapDaoToDto(dao, BookingDto.class);
+        return Mapper.combine(BookingDto.class,dao, eventService.getEventById(dao.getEventId()));
     }
 
     @Override
     public Collection<BookingDto> getAllUserBookings(long userId) {
         var list= bookingRepo.getAllUserBookings(userId).stream()
-                .map(dao -> (BookingDto) Mapper.mapDaoToDto(dao, BookingDto.class))
+                .map(dao -> Mapper.combine(BookingDto.class, dao, eventService.getEventById(dao.getEventId())))
                 .toList();
         return list;
     }
 
     @Override
     public Pair<Boolean, String> setNewBooking(BookingDto bookingDto) {
-        var event = eventRepo.getEventById(bookingDto.getEventId());
+        var eventDet = eventService.getDetails(bookingDto.getEventId());
 
-        if (event == null) return Pair.with(false, "Event not found");
+        if (eventDet == null) return Pair.with(false, "Event not found");
 
         if (checkBookingExists(bookingDto)) return Pair.with(false, "Booking already exists");
 
-        if (event.getBookedSeats() + bookingDto.getQty() > event.getCapacity()) {
+        if (eventDet.getBookedSeats() + bookingDto.getQty() > eventDet.getCapacity()) {
             return Pair.with(false, "Booking full");
         }
 
-        BookingDao dao = (BookingDao) Mapper.mapDtoToDao(bookingDto, BookingDao.class);
+        BookingDao dao =Mapper.splitOne(bookingDto, BookingDao.class);
         boolean success = bookingRepo.setNewBooking(dao);
         return Pair.with(success, success ? "Success" : "Error");
     }
 
     public boolean checkBookingExists(BookingDto booking) {
-        return bookingRepo.checkBookingExists((BookingDao) Mapper.mapDtoToDao(booking, BookingDao.class));
+        return bookingRepo.checkBookingExists(Mapper.splitOne(booking, BookingDao.class));
     }
 
     @Override

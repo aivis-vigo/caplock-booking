@@ -1,56 +1,99 @@
 package com.caplock.booking.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 public class Mapper {
-    public static <T> T mapDtoToDao(Object dto, Class<T> daoClass) {
-        if (dto == null) {
-            return null;
-        }
 
-        try {
-            T dao = daoClass.getDeclaredConstructor().newInstance();
-            copyProperties(dto, dao);
-            return dao;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to map DTO to DAO", e);
+    /**  many DAOs -> One Dto**/
+    public static <T> T combine(Class<T> targetClass, Object... sources) {
+        T target = newInstance(targetClass);
+        if (sources == null) return target;
+
+        for (Object src : sources) {
+            if (src != null) copyInto(src, target);
         }
+        return target;
     }
 
-    public static <T> T mapDaoToDto(Object dao, Class<T> dtoClass) {
-        if (dao == null) {
-            return null;
-        }
+    /** One DTO -> many DAOs (or generally one source -> many targets). */
+    public static Map<Class<?>, Object> split(Object source, Class<?>... targetClasses) {
+        Map<Class<?>, Object> result = new LinkedHashMap<>();
+        if (targetClasses == null) return result;
 
-        try {
-            T dto = dtoClass.getDeclaredConstructor().newInstance();
-            copyProperties(dao, dto);
-            return dto;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to map DAO to DTO", e);
+        for (Class<?> cls : targetClasses) {
+            Object target = newInstanceRaw(cls);
+            if (source != null) copyInto(source, target);
+            result.put(cls, target);
         }
+        return result;
     }
-    private static void copyProperties(Object source, Object target) {
-        if (source == null || target == null) {
-            return;
-        }
 
-        Field[] sourceFields = source.getClass().getDeclaredFields();
+    public static <T> T copyInto(Object source, T target) {
+        if (source == null || target == null) return target;
 
-        for (Field sourceField : sourceFields) {
+        Map<String, Field> targetFields = allFieldsByName(target.getClass());
+        for (Field sf : allFields(source.getClass())) {
+            if (Modifier.isStatic(sf.getModifiers())) continue;
+
+            Field tf = targetFields.get(sf.getName());
+            if (tf == null) continue;
+            if (Modifier.isFinal(tf.getModifiers()) || Modifier.isStatic(tf.getModifiers())) continue;
+
             try {
-                sourceField.setAccessible(true);
-                Field targetField = target.getClass().getDeclaredField(sourceField.getName());
-                targetField.setAccessible(true);
+                sf.setAccessible(true);
+                Object value = sf.get(source);
 
-                Object value = sourceField.get(source);
-                targetField.set(target, value);
-            } catch (NoSuchFieldException e) {
-                // Field doesn't exist in target, skip it
+                tf.setAccessible(true);
+
+                // Only assign compatible types
+                if (value == null || tf.getType().isAssignableFrom(value.getClass())) {
+                    tf.set(target, value);
+                }
             } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to copy property: " + sourceField.getName(), e);
+                throw new RuntimeException("Failed to copy field: " + sf.getName(), e);
             }
         }
+        return target;
+    }
+
+    private static List<Field> allFields(Class<?> type) {
+        List<Field> fields = new ArrayList<>();
+        for (Class<?> c = type; c != null && c != Object.class; c = c.getSuperclass()) {
+            fields.addAll(Arrays.asList(c.getDeclaredFields()));
+        }
+        return fields;
+    }
+
+    private static Map<String, Field> allFieldsByName(Class<?> type) {
+        Map<String, Field> map = new HashMap<>();
+        for (Field f : allFields(type)) {
+            map.putIfAbsent(f.getName(), f);
+        }
+        return map;
+    }
+
+    private static <T> T newInstance(Class<T> clazz) {
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot instantiate " + clazz.getName(), e);
+        }
+    }
+
+    private static Object newInstanceRaw(Class<?> clazz) {
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot instantiate " + clazz.getName(), e);
+        }
+    }
+
+    public static <T> T splitOne(Object source, Class<T> targetClass) {
+        T target = newInstance(targetClass);
+        if (source != null) copyInto(source, target);
+        return target;
     }
 }
 
