@@ -28,8 +28,7 @@ public class TicketServiceImplementation implements TicketService {
                 .map(ticket -> modelMapper.map(ticket, TicketDTO.class))
                 .toList();
 
-        Long ticketsCount = (long) ticketRepository.findAll().size();
-        log.info("Tickets read: {}", ticketsCount);
+        log.info("Fetching all tickets, count: {}", (long) tickets.size());
 
         return Response.<List<TicketDTO>>builder()
                 .statusCode(HttpStatus.OK.value())
@@ -45,6 +44,8 @@ public class TicketServiceImplementation implements TicketService {
                 .map(ticket -> modelMapper.map(ticket, TicketDTO.class))
                 .toList();
 
+        log.info("Fetching tickets for holder: {}, count: {}", holderName, (long) tickets.size());
+
         return Response.<List<TicketDTO>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success")
@@ -54,7 +55,12 @@ public class TicketServiceImplementation implements TicketService {
 
     @Override
     public Response<TicketDTO> create(Ticket newTicket) {
+        log.info("Creating ticket for holder: {}", newTicket.getHolderName());
+
         Ticket savedTicket = ticketRepository.save(newTicket);
+
+        log.info("Ticket created with id: {}", savedTicket.getId());
+
         TicketDTO ticketDTO = modelMapper.map(savedTicket, TicketDTO.class);
 
         return Response.<TicketDTO>builder()
@@ -66,6 +72,8 @@ public class TicketServiceImplementation implements TicketService {
 
     @Override
     public Response<?> update(Long id, Ticket updatedTicket) {
+        log.info("Updating ticket with id: {}", id);
+
         ticketRepository.findById(id).ifPresent(ticket -> updatedTicket.setId(ticket.getId()));
         ticketRepository.save(updatedTicket);
 
@@ -78,6 +86,8 @@ public class TicketServiceImplementation implements TicketService {
 
     @Override
     public Response<?> deleteById(Long id) {
+        log.info("Deleting ticket with id: {}", id);
+
         ticketRepository.deleteById(id);
 
         return Response.<Void>builder()
