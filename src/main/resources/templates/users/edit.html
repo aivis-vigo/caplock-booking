@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit User</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; padding: 0 20px; }
+        h2 { margin-bottom: 20px; }
+        label { display: block; margin-top: 12px; font-weight: bold; }
+        input, select { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[readonly] { background: #e9ecef; }
+        button { margin-top: 20px; padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .back { display: inline-block; margin-top: 12px; color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h2>Edit User</h2>
+    <form th:action="@{/user/update/{id}(id=${user.id})}" method="post">
+        <input type="hidden" name="_method" value="PUT">
+
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" th:value="${user.name}" required>
+
+        <label for="emailHash">Email</label>
+        <input type="text" id="emailHash" name="emailHash" th:value="${user.emailHash}" required>
+
+        <label for="passwordHash">Password</label>
+        <input type="password" id="passwordHash" name="passwordHash" th:value="${user.passwordHash}" required>
+
+        <label for="role">Role</label>
+        <select id="role" name="role">
+            <option value="USER" th:selected="${user.role != null and user.role.name() == 'USER'}">User</option>
+            <option value="ADMIN" th:selected="${user.role != null and user.role.name() == 'ADMIN'}">Admin</option>
+        </select>
+
+        <button type="submit">Save Changes</button>
+    </form>
+    <a class="back" th:href="@{/user/all}">Back to list</a>
+</body>
+</html>
