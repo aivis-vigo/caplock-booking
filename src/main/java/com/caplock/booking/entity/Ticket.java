@@ -3,6 +3,7 @@ package com.caplock.booking.entity;
 import com.caplock.booking.TicketType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Data
 @Table(name = "tickets")
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Ticket {
