@@ -92,5 +92,11 @@ public class EventService implements IEventService {
         return false;
     }
 
-    public boolean assignSeats(long eventId, S) {}
+    public boolean unassignSeat(long eventId, String eventTitle, String seat) {
+        return eventRepo.unAssignSeat(eventId, eventTitle, seat);
+    }
+
+    public boolean assignSeat(long eventId, String eventTitle, String bookingId, String seat) {
+        return eventRepo.assignSeat(eventId, eventTitle, bookingId, seat);
+    }
 }

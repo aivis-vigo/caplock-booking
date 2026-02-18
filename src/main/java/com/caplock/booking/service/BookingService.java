@@ -21,6 +21,8 @@ public class BookingService implements IBookingService {
     private IBookingRepository bookingRepo;
     @Autowired
     private IEventService eventService;
+    @Autowired
+    private ISeatReservationService seatReservationService;
 
     @Override
     public BookingDetailsDto getDetails(long id) {
@@ -28,7 +30,7 @@ public class BookingService implements IBookingService {
         if (bookingDao == null) return null;
 
         // Map bookingDao -> BookingDto (flat -> flat)
-        BookingDto bookingDto = Mapper.combine(BookingDto.class,bookingDao);
+        BookingDto bookingDto = Mapper.combine(BookingDto.class, bookingDao);
 
         // Fetch/map event separately using eventId from booking
         var eventDao = eventService.getEventById(bookingDao.getEventId());
@@ -40,12 +42,12 @@ public class BookingService implements IBookingService {
     @Override
     public BookingDto getBookingById(long id) {
         var dao = bookingRepo.getBookingById(id);
-        return Mapper.combine(BookingDto.class,dao, eventService.getEventById(dao.getEventId()));
+        return Mapper.combine(BookingDto.class, dao, eventService.getEventById(dao.getEventId()));
     }
 
     @Override
     public Collection<BookingDto> getAllUserBookings(long userId) {
-        var list= bookingRepo.getAllUserBookings(userId).stream()
+        var list = bookingRepo.getAllUserBookings(userId).stream()
                 .map(dao -> Mapper.combine(BookingDto.class, dao, eventService.getEventById(dao.getEventId())))
                 .toList();
         return list;
@@ -53,8 +55,9 @@ public class BookingService implements IBookingService {
 
     @Override
     public Pair<Boolean, String> setNewBooking(BookingDto bookingDto) {
-
-        BookingDao dao =Mapper.splitOne(bookingDto, BookingDao.class);
+        var val = seatReservationService.assignSeats(bookingDto.getId(), bookingDto.getEventId(), bookingDto.getQty(), bookingDto.getSeats());
+        if (!val.getValue0()) return val;
+        BookingDao dao = Mapper.splitOne(bookingDto, BookingDao.class);
         boolean success = bookingRepo.setNewBooking(dao);
         return Pair.with(success, success ? "Success" : "Error");
     }

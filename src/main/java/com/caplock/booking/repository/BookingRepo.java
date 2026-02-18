@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class BookingRepo implements IBookingRepository{
@@ -45,7 +46,7 @@ public class BookingRepo implements IBookingRepository{
     @Override
     public boolean checkBookingExists(String bookingId, long eventId) {
         return mockBookings.stream()
-                .anyMatch(b -> b.getUserId() == bookingId &&
+                .anyMatch(b -> Objects.equals(b.getId(), bookingId) &&
                         b.getEventId() == eventId);
     }
 

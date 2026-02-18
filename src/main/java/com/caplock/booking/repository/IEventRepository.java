@@ -23,13 +23,13 @@ public interface IEventRepository {
 
     boolean setEvent(EventDao eventDao);
 
-    boolean updateEvent(long id,EventDao eventDao);
+    boolean updateEvent(long id, EventDao eventDao);
 
     boolean deleteEvent(long id);
 
     boolean deleteByTitle(String title);
 
-    boolean unassignSeat(long eventId, String eventTitle, String seat);
+    boolean unAssignSeat(long eventId, String eventTitle, String seat);
 
     boolean assignSeat(long eventId, String eventTitle, String bookingId, String seat);
 }

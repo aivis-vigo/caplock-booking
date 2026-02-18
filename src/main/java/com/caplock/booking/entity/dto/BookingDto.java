@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -19,5 +21,5 @@ public class BookingDto {
     private String eventDescription;
     private String eventLocation;
     private long userId;
-    private String seat;
+    private List<String> seats;
 }

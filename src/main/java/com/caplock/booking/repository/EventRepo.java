@@ -17,12 +17,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Repository
 public class EventRepo implements IEventRepository {
-    private static ReentrantLock lock = new ReentrantLock();
-    private static final ConcurrentHashMap<String, ConcurrentHashMap<String,SeatReserver>> eventsSeat = new ConcurrentHashMap<>();
-    private record SeatReserver(long eventId, String bookingId){}
+    private static final ReentrantLock lock = new ReentrantLock();
+    private static final ConcurrentHashMap<String, ConcurrentHashMap<String, SeatReserver>> eventsSeat = new ConcurrentHashMap<>();
+
+    private record SeatReserver(long eventId, String bookingId) {
+    }
 
     public EventRepo() {
-        for(var mock: mockEvents){
+        for (var mock : mockEvents) {
             eventsSeat.put(mock.getTitle(), new ConcurrentHashMap<>());
         }
     }
@@ -85,7 +87,7 @@ public class EventRepo implements IEventRepository {
     }
 
     @Override
-    public boolean updateEvent(long eventId,EventDao updatedEvent) {
+    public boolean updateEvent(long eventId, EventDao updatedEvent) {
         for (int i = 0; i < mockEvents.size(); i++) {
             if (mockEvents.get(i).getId() == updatedEvent.getId()) {
                 mockEvents.set(i, updatedEvent);
@@ -104,49 +106,51 @@ public class EventRepo implements IEventRepository {
     public boolean deleteByTitle(String title) {
         return mockEvents.removeIf(event -> event.getTitle().equalsIgnoreCase(title));
     }
-@Override
-    public boolean assignSeat(long eventId, String eventTitle, String bookingId, String seat){
-        try {
-            lock.lock();
-            if(eventsSeat.get(eventTitle).put(seat, new SeatReserver(eventId,bookingId))==null){
-                return false;
-            }
-        }catch (Exception ex){
-           //log
-        }finally {
-            lock.unlock();
-        }
-        return true;
-    }
+
     @Override
-    public boolean unassignSeat(long eventId, String eventTitle, String seat){
+    public boolean assignSeat(long eventId, String eventTitle, String bookingId, String seat) {
         try {
-            assert seat != null;
             lock.lock();
-            if(eventsSeat.containsKey(eventTitle) & eventsSeat.get(eventTitle).containsKey(seat)){
-            eventsSeat.get(eventTitle).replace(seat, null);
-//            if( eventsSeat.get(event.getTitle()).get(seat)!=null){
-//                return false;
-//            }
-           }else{
+            if (eventsSeat.get(eventTitle).put(seat, new SeatReserver(eventId, bookingId)) == null) {
                 return false;
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             //log
-        }finally {
+        } finally {
             lock.unlock();
         }
         return true;
     }
 
-    private boolean syncData(){
+    @Override
+    public boolean unAssignSeat(long eventId, String eventTitle, String seat) {
+        try {
+            assert seat != null;
+            lock.lock();
+            if (eventsSeat.containsKey(eventTitle) & eventsSeat.get(eventTitle).containsKey(seat)) {
+                eventsSeat.get(eventTitle).replace(seat, null);
+//            if( eventsSeat.get(event.getTitle()).get(seat)!=null){
+//                return false;
+//            }
+            } else {
+                return false;
+            }
+        } catch (Exception ex) {
+            //log
+        } finally {
+            lock.unlock();
+        }
+        return true;
+    }
+
+    private boolean syncData() {
         try {
             lock.lock();
 
             // sync with database
-        }catch (Exception ex){
+        } catch (Exception ex) {
             //log
-        }finally {
+        } finally {
             lock.unlock();
         }
         return true;

@@ -32,4 +32,7 @@ public interface IEventService {
 
     boolean deleteByTitle(String title);
 
+    boolean unassignSeat(long eventId, String eventTitle, String seat);
+
+    boolean assignSeat(long eventId, String eventTitle, String bookingId, String seat);
 }

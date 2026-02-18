@@ -3,14 +3,21 @@ package com.caplock.booking.controller;
 import com.caplock.booking.controller.helper.FormShower;
 import com.caplock.booking.entity.dto.BookingDto;
 import com.caplock.booking.service.IBookingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 @Controller
 @RequestMapping("/bookings")
 public class BookingController {
+    Random random = new Random();
+    @Autowired
     private final IBookingService bookingService;
 
     public BookingController(IBookingService iBookingService) {
@@ -33,18 +40,30 @@ public class BookingController {
 
     @PostMapping("/submitForm")
     public String setBooking(@ModelAttribute("booking") BookingDto booking) {
+
+
+        var a = new ArrayList<String>() {
+        };
+        a.add("1");
+        a.add("1");
+        a.add("3");
+        booking.setSeats(a);
         var result = bookingService.setNewBooking(booking);
 
         boolean isSuccess = result.getValue0();
         String message = result.getValue1();
 
-        if (true || !isSuccess && message.contains("Booking full")) {
+        if (!isSuccess && message.contains("Booking full")) {
             int userId = (int) -1;
             // show message
             return "redirect:/waitList/form/" + userId;
-        } else {
-            return "redirect:/bookings/";
+        } else if (!isSuccess) {
+            // show message
+            return "redirect:/bookings/form/";
         }
+
+            return "redirect:/bookings/";
+
     }
 
 }
