@@ -1,4 +1,4 @@
-package com.caplock.booking.entity.DAO;
+package com.caplock.booking.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvoiceDAO {
+public class InvoiceDTO {
     private Long id;
     private Long bookingId;
     private BigDecimal amount;

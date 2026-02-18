@@ -1,6 +1,6 @@
 package com.caplock.booking.repository;
 
-import com.caplock.booking.entity.DAO.PaymentDAO;
+import com.caplock.booking.entity.dao.PaymentDAO;
 
 import java.util.List;
 import java.util.Optional;

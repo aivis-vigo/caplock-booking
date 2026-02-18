@@ -1,8 +1,8 @@
 package com.caplock.booking.service;
 
-import com.caplock.booking.mappers.InvoiceMapper;
-import com.caplock.booking.entity.DAO.InvoiceDAO;
-import com.caplock.booking.entity.DTO.InvoiceDTO;
+import com.caplock.booking.util.InvoiceMapper;
+import com.caplock.booking.entity.dao.InvoiceDAO;
+import com.caplock.booking.entity.dto.InvoiceDTO;
 import com.caplock.booking.repository.IInvoiceRepository;
 import org.springframework.stereotype.Service;
 

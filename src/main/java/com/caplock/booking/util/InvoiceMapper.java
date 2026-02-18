@@ -1,7 +1,7 @@
-package com.caplock.booking.mappers;
+package com.caplock.booking.util;
 
-import com.caplock.booking.entity.DAO.InvoiceDAO;
-import com.caplock.booking.entity.DTO.InvoiceDTO;
+import com.caplock.booking.entity.dao.InvoiceDAO;
+import com.caplock.booking.entity.dto.InvoiceDTO;
 
 public class InvoiceMapper {
     public static InvoiceDTO toDTO(InvoiceDAO dao) {

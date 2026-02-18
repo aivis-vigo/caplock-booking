@@ -1,6 +1,6 @@
 package com.caplock.booking.controller;
 
-import com.caplock.booking.entity.DTO.InvoiceDTO;
+import com.caplock.booking.entity.dto.InvoiceDTO;
 import com.caplock.booking.service.IInvoiceService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

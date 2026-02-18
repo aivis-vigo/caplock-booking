@@ -1,6 +1,6 @@
 package com.caplock.booking.controller;
 
-import com.caplock.booking.entity.DTO.CategoryDTO;
+import com.caplock.booking.entity.dto.CategoryDTO;
 import com.caplock.booking.service.ICategoryService;
 import org.springframework.web.bind.annotation.*;
 

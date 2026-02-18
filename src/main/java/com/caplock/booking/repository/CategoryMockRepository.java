@@ -1,6 +1,6 @@
 package com.caplock.booking.repository;
 
-import com.caplock.booking.entity.DAO.CategoryDAO;
+import com.caplock.booking.entity.dao.CategoryDAO;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;

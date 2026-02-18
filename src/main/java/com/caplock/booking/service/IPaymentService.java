@@ -1,6 +1,6 @@
 package com.caplock.booking.service;
 
-import com.caplock.booking.entity.DTO.PaymentDTO;
+import com.caplock.booking.entity.dto.PaymentDTO;
 
 import java.util.List;
 

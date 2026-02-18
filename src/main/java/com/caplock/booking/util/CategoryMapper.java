@@ -1,7 +1,7 @@
-package com.caplock.booking.mappers;
+package com.caplock.booking.util;
 
-import com.caplock.booking.entity.DAO.CategoryDAO;
-import com.caplock.booking.entity.DTO.CategoryDTO;
+import com.caplock.booking.entity.dao.CategoryDAO;
+import com.caplock.booking.entity.dto.CategoryDTO;
 
 public class CategoryMapper {
     public static CategoryDTO toDTO(CategoryDAO dao) {

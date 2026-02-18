@@ -1,6 +1,6 @@
 package com.caplock.booking.service;
 
-import com.caplock.booking.entity.DTO.InvoiceDTO;
+import com.caplock.booking.entity.dto.InvoiceDTO;
 
 import java.math.BigDecimal;
 import java.util.List;

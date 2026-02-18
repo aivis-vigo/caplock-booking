@@ -1,7 +1,7 @@
 package com.caplock.booking.service;
 
-import com.caplock.booking.mappers.CategoryMapper;
-import com.caplock.booking.entity.DTO.CategoryDTO;
+import com.caplock.booking.util.CategoryMapper;
+import com.caplock.booking.entity.dto.CategoryDTO;
 import com.caplock.booking.repository.ICategoryRepository;
 import org.springframework.stereotype.Service;
 
