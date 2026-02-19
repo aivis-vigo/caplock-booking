@@ -1,8 +1,9 @@
 package com.caplock.booking.controller;
 
-import com.caplock.booking.entity.dto.Response;
+import com.caplock.booking.entity.dto.CreateTicketDTO;
 import com.caplock.booking.entity.dto.TicketDTO;
-import com.caplock.booking.entity.Ticket;
+import com.caplock.booking.entity.dto.Response;
+import com.caplock.booking.entity.object.Ticket;
 import com.caplock.booking.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ui.Model;
@@ -40,7 +41,7 @@ public class TicketController {
 
     @ResponseBody
     @PostMapping("/create")
-    public Response<TicketDTO> createTicket(@RequestBody Ticket newTicket) {
+    public Response<TicketDTO> createTicket(@RequestBody CreateTicketDTO newTicket) {
         return ticketService.create(newTicket);
     }
 

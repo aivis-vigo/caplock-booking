@@ -1,4 +1,4 @@
-package com.caplock.booking.entity;
+package com.caplock.booking.entity.object;
 
 import com.caplock.booking.TicketType;
 import jakarta.persistence.*;

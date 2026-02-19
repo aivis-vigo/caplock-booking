@@ -1,9 +1,9 @@
 package com.caplock.booking.api.service;
 
-import com.caplock.booking.dto.CreateTicketDTO;
-import com.caplock.booking.dto.Response;
-import com.caplock.booking.dto.TicketDTO;
-import com.caplock.booking.entity.Ticket;
+import com.caplock.booking.entity.dto.CreateTicketDTO;
+import com.caplock.booking.entity.dto.Response;
+import com.caplock.booking.entity.dto.TicketDTO;
+import com.caplock.booking.entity.object.Ticket;
 import com.caplock.booking.repository.jpa.TicketRepository;
 import com.caplock.booking.service.QrService;
 import com.caplock.booking.service.TicketServiceImplementation;

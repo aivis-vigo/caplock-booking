@@ -1,4 +1,4 @@
-package com.caplock.booking.dto;
+package com.caplock.booking.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

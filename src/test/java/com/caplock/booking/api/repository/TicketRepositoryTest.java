@@ -1,7 +1,7 @@
 package com.caplock.booking.api.repository;
 
 import com.caplock.booking.TicketType;
-import com.caplock.booking.entity.Ticket;
+import com.caplock.booking.entity.object.Ticket;
 import com.caplock.booking.repository.jpa.TicketRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

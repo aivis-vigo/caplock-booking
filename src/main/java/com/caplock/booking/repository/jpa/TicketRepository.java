@@ -1,6 +1,6 @@
 package com.caplock.booking.repository.jpa;
 
-import com.caplock.booking.entity.Ticket;
+import com.caplock.booking.entity.object.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

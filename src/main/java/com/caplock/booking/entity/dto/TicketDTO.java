@@ -1,4 +1,4 @@
-package com.caplock.booking.dto;
+package com.caplock.booking.entity.dto;
 
 import com.caplock.booking.TicketType;
 import lombok.AllArgsConstructor;
