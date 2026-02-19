@@ -45,15 +45,40 @@ public class Mapper {
         return type.isPrimitive() ? PRIMITIVE_TO_WRAPPER.getOrDefault(type, type) : type;
     }
 
+    private static String classPrefix(Class<?> cls) {
+        String n = cls.getSimpleName();           // EventDto
+        if (n.endsWith("Dto")) n = n.substring(0, n.length() - 3); // Event
+        if (n.endsWith("Dao")) n = n.substring(0, n.length() - 3); // Event
+        if (n.isEmpty()) return "";
+        return Character.toLowerCase(n.charAt(0)) + n.substring(1); // event
+    }
+
+    private static String capitalize(String s) {
+        if (s == null || s.isEmpty()) return s;
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
+
     public static <T> T copyInto(Object source, T target) {
         if (source == null || target == null) return target;
 
         Map<String, Field> targetFields = allFieldsByName(target.getClass());
 
+        // EventDto -> "event", UserDto -> "user", etc.
+        String prefix = classPrefix(source.getClass());
+
         for (Field sf : allFields(source.getClass())) {
             if (Modifier.isStatic(sf.getModifiers())) continue;
 
+            // 1) try direct match: title -> title
             Field tf = targetFields.get(sf.getName());
+
+            // 2) if no direct field, try prefixed match when classes differ:
+            // EventDto.title -> eventTitle
+            if (tf == null && source.getClass() != target.getClass()) {
+                String prefixedName = prefix + capitalize(sf.getName()); // eventTitle
+                tf = targetFields.get(prefixedName);
+            }
+
             if (tf == null) continue;
             if (Modifier.isStatic(tf.getModifiers()) || Modifier.isFinal(tf.getModifiers())) continue;
 
@@ -64,7 +89,6 @@ public class Mapper {
                 tf.setAccessible(true);
 
                 if (value == null) {
-                    // don't set null into primitives (would throw)
                     if (!tf.getType().isPrimitive()) tf.set(target, null);
                     continue;
                 }
@@ -80,15 +104,14 @@ public class Mapper {
                 // optional: numeric widening (e.g., Integer -> Long)
                 if (value instanceof Number n && Number.class.isAssignableFrom(targetType)) {
                     Object converted = convertNumber(n, targetType);
-                    if (converted != null) {
-                        tf.set(target, converted);
-                    }
+                    if (converted != null) tf.set(target, converted);
                 }
 
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Failed to copy field: " + sf.getName(), e);
             }
         }
+
         return target;
     }
 
