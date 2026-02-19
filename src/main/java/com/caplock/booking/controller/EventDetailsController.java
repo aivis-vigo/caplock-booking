@@ -30,7 +30,7 @@ public class EventDetailsController {
     @PostMapping("/delete/{id}")
     public String deleteBooking(@PathVariable long id) {
         eventService.deleteEvent(id);
-        return "redirect:/events/events";
+        return "redirect:/events/";
     }
 
     @GetMapping({"/form", "/form/{id}"})

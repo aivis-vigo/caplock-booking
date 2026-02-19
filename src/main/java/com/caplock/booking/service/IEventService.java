@@ -27,7 +27,7 @@ public interface IEventService {
 
     boolean setEvent(EventDetailsDto dto);
 
-    boolean updateEvent(long id, EventDto dto);
+    boolean updateEvent(long id, EventDetailsDto dto);
 
     boolean deleteEvent(long id);
 

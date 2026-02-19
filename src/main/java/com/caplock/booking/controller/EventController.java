@@ -45,13 +45,18 @@ public class EventController {
     }
 
     @PutMapping("/update/{id}")
-    public String putEvent(@ModelAttribute EventDto event, @PathVariable long id) {
+    public String putEvent(@ModelAttribute EventDetailsDto event, @PathVariable long id) {
         // get user id from jwt
         if (   eventService.updateEvent(id, event))
-            return "redirect:events/events/";
+            return "redirect:events/";
         else {
             //show error
             return "redirect:events/eventDetails";
         }
+    }
+    @PostMapping("/delete/{id}")
+    public String deleteBooking(@PathVariable long id) {
+        eventService.deleteEvent(id);
+        return "redirect:/events/";
     }
 }

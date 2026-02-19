@@ -24,12 +24,23 @@
 
 <h1 th:text="${formName != null ? formName + ' Event' : 'Event Form'}">Add / Edit Event</h1>
 
+<!--
+  IMPORTANT:
+  Model must contain attribute "event" of type EventDetailsDto.
+  And inside it: event.eventDto must NOT be null (create new EventDto in controller).
+-->
 
 <form th:object="${event}"
-      th:action="@{/events/submitForm}"
+      th:action="${editing}
+                 ? @{/events/update/{id}(id=${event.eventDto.id})}
+                 : @{/events/submitForm}"
       method="post">
+    <input type="hidden"
+           name="_method"
+           value="PUT"
+           th:if="${event.eventDto != null and event.eventDto.id > 0}" />
 
-    <!-- EventDto nested -->
+    <!-- Nested EventDto -->
     <input type="hidden" th:field="*{eventDto.id}"/>
 
     <div class="card">
@@ -50,7 +61,14 @@
         <div class="row">
             <div class="col form-group">
                 <label for="eventDate">Event Date</label>
-                <input type="datetime-local" id="eventDate" th:field="*{eventDto.eventDate}" required>
+                <!-- datetime-local needs yyyy-MM-ddTHH:mm -->
+                <input type="datetime-local"
+                       id="eventDate"
+                       th:name="eventDto.eventDate"
+                       th:value="${event.eventDto != null and event.eventDto.eventDate != null
+                                 ? #temporals.format(event.eventDto.eventDate, 'yyyy-MM-dd''T''HH:mm')
+                                 : ''}"
+                       required>
                 <div class="muted">Tip: format is yyyy-MM-ddTHH:mm</div>
                 <div class="error" th:if="${#fields.hasErrors('eventDto.eventDate')}" th:errors="*{eventDto.eventDate}">Date error</div>
             </div>
@@ -78,7 +96,6 @@
 
         <div class="form-group">
             <label for="status">Status</label>
-            <!-- IMPORTANT: values must match your StatusEventEnum constants exactly -->
             <select id="status" th:field="*{eventDto.status}">
                 <option value="">Select Status</option>
                 <option th:each="s : ${T(com.caplock.booking.entity.StatusEventEnum).values()}"
@@ -109,7 +126,12 @@
         <div class="row">
             <div class="col form-group">
                 <label for="bookingStartTime">Booking Start Time</label>
-                <input type="datetime-local" id="bookingStartTime" th:field="*{bookingStartTime}">
+                <input type="datetime-local"
+                       id="bookingStartTime"
+                       th:name="bookingStartTime"
+                       th:value="${event.bookingStartTime != null
+                                 ? #temporals.format(event.bookingStartTime, 'yyyy-MM-dd''T''HH:mm')
+                                 : ''}">
                 <div class="error" th:if="${#fields.hasErrors('bookingStartTime')}" th:errors="*{bookingStartTime}">Booking start error</div>
             </div>
 
@@ -119,8 +141,8 @@
                        id="bookingDeadline"
                        th:name="bookingDeadline"
                        th:value="${event.bookingDeadline != null
-                  ? #temporals.format(event.bookingDeadline, 'yyyy-MM-dd''T''HH:mm')
-                  : ''}">
+                                 ? #temporals.format(event.bookingDeadline, 'yyyy-MM-dd''T''HH:mm')
+                                 : ''}">
                 <div class="error" th:if="${#fields.hasErrors('bookingDeadline')}" th:errors="*{bookingDeadline}">Deadline error</div>
             </div>
         </div>
@@ -128,19 +150,32 @@
         <div class="row">
             <div class="col form-group">
                 <label for="startTime">Event Start Time</label>
-                <input type="datetime-local" id="startTime" th:field="*{eventDto.startTime}">
+                <input type="datetime-local"
+                       id="startTime"
+                       th:name="eventDto.startTime"
+                       th:value="${event.eventDto != null and event.eventDto.startTime != null
+                                 ? #temporals.format(event.eventDto.startTime, 'yyyy-MM-dd''T''HH:mm')
+                                 : ''}">
                 <div class="error" th:if="${#fields.hasErrors('eventDto.startTime')}" th:errors="*{eventDto.startTime}">Start time error</div>
             </div>
 
             <div class="col form-group">
                 <label for="endTime">Event End Time</label>
-                <input type="datetime-local" id="endTime" th:field="*{eventDto.endTime}">
+                <input type="datetime-local"
+                       id="endTime"
+                       th:name="eventDto.endTime"
+                       th:value="${event.eventDto != null and event.eventDto.endTime != null
+                                 ? #temporals.format(event.eventDto.endTime, 'yyyy-MM-dd''T''HH:mm')
+                                 : ''}">
                 <div class="error" th:if="${#fields.hasErrors('eventDto.endTime')}" th:errors="*{eventDto.endTime}">End time error</div>
             </div>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-submit" th:text="${formButton != null ? formButton : 'Submit'}">Submit</button>
+    <button type="submit" class="btn btn-submit"
+            th:text="${event.eventDto != null and event.eventDto.id > 0 ? 'Update' : 'Create'}">
+        Submit
+    </button>
     <a th:href="@{/events/}" class="btn btn-cancel">Cancel</a>
 
 </form>
