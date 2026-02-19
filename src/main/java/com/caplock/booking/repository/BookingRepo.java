@@ -37,9 +37,6 @@ public class BookingRepo implements IBookingRepository{
 
     @Override
     public boolean setNewBooking(BookingDao booking) {
-        if (booking.getId() == null) {
-            booking.setId("BK-" + System.currentTimeMillis());
-        }
         return mockBookings.add(booking);
     }
 

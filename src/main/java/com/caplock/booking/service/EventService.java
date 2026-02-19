@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventService implements IEventService {
@@ -45,14 +46,16 @@ public class EventService implements IEventService {
 
     @Override
     public boolean setEvent(EventDetailsDto dto) {
-        var a=eventRepo.setEvent(Mapper.combine(EventDao.class, dto));
+        var a = eventRepo.setEvent(Mapper.combine(EventDao.class, dto));
         return a;
     }
 
     @Override
-    public boolean updateEvent(long id, EventDto dto) {
-        dto.setId(id);
-        return eventRepo.updateEvent(id, Mapper.splitOne(dto, EventDao.class));
+    public boolean updateEvent(long id, EventDetailsDto dto) {
+        dto.getEventDto().setId(id);
+        var a = Mapper.splitOne(dto, EventDao.class, Map.of());
+
+        return eventRepo.updateEvent(id, a);
     }
 
     @Override
@@ -105,7 +108,13 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public List<String> getSeatsForEvent(long eventId) {
+    public List<String> getSeatsFreeForEvent(long eventId) {
         return eventRepo.getSeatsForEvent(eventId);
     }
+
+    @Override
+    public List<String> getBookingSeatsForEvent(long eventId, String bookId) {
+        return eventRepo.getBookingSeatsForEvent(eventId, bookId);
+    }
+
 }

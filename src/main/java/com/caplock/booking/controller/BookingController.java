@@ -29,17 +29,26 @@ public class BookingController {
         this.eventService = iEventService;
     }
 
+    @GetMapping("/form")
+    public String formRedirect(@RequestParam(required = false) String id) {
+        if (id == null || id.isBlank()) {
+            return "redirect:/bookings/form/"; // or open add form
+        }
+        return "redirect:/bookings/form/" + id+"/";
+    }
+
     @GetMapping("/")
     public String getAllBookings(Model model) {
         // get user id from jwt
         long userId = 1;
-        model.addAttribute("bookings", bookingService.getAllUserBookings(userId));
+        model.addAttribute("testId", 0L);
+        model.addAttribute("bookingList", bookingService.getAllUserBookings(userId));
         return "bookings/bookings";
     }
 
     @GetMapping({"/form/{eventId}/", "form/{eventId}/{id}"})
     public String form(Model model, @PathVariable long eventId, @PathVariable(required = false) String id) {
-        long userId = 48;
+        long userId = 1;
         boolean editing = id != null;
         var val = bookingService.getBookingFormById(id, userId);
         var form = val == null ? new BookingFormDto() : val;
@@ -47,7 +56,7 @@ public class BookingController {
         form.setEventId(eventId);
         form.setUserId(userId);
 
-        var seats = eventService.getSeatsForEvent(eventId);
+        var seats = eventService.getSeatsFreeForEvent(eventId);
         model.addAttribute("availableSeats", seats);
         model.addAttribute("bookingForm", form);
         model.addAttribute("formName", editing ? "Edit" : "Add");
@@ -75,4 +84,13 @@ public class BookingController {
 
     }
 
+    @PostMapping("/delete/{id}")
+    public String deleteBooking(@PathVariable String id) {
+        if (bookingService.cancelBooking(id))
+            return "redirect:/bookings/";
+        else {
+            //show error
+            return "redirect:/bookings/";
+        }
+    }
 }

@@ -24,13 +24,4 @@ public class BookingDetailsController {
     }
 
 
-    @PostMapping("/delete/{id}")
-    public String deleteBooking(@PathVariable String id) {
-        if (bookingService.cancelBooking(id))
-            return "redirect:/bookings/";
-        else {
-            //show error
-            return "redirect:/bookings/";
-        }
-    }
 }
