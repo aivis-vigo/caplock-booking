@@ -67,11 +67,9 @@ public class Mapper {
         return type.isPrimitive() ? PRIMITIVE_TO_WRAPPER.getOrDefault(type, type) : type;
     }
 
-    /** Copy with aliases (aliases can be empty). */
     public static <T> T copyInto(Object source, T target, Map<String, String> aliases) {
         if (source == null || target == null) return target;
 
-        // NEVER reflect into JDK/framework restricted types (prevents InaccessibleObjectException)
         if (!isSafeToReflect(source.getClass())) return target;
 
         Map<String, Field> targetFields = allFieldsByName(target.getClass());
@@ -79,7 +77,6 @@ public class Mapper {
         for (Field sf : allFields(source.getClass())) {
             if (Modifier.isStatic(sf.getModifiers())) continue;
 
-            // Special case: flatten nested "eventDto" (EventDetailsDto -> EventDao)
             if ("eventDto".equals(sf.getName())) {
                 try {
                     sf.setAccessible(true);
@@ -107,7 +104,6 @@ public class Mapper {
 
                 tf.setAccessible(true);
 
-                // don't set null into primitives
                 if (value == null) {
                     if (!tf.getType().isPrimitive()) tf.set(target, null);
                     continue;
@@ -115,26 +111,23 @@ public class Mapper {
 
                 Class<?> targetType = boxed(tf.getType());
 
-                // direct assign
+
                 if (targetType.isAssignableFrom(value.getClass())) {
                     tf.set(target, value);
                     continue;
                 }
 
-                // numeric widening
                 if (value instanceof Number n && Number.class.isAssignableFrom(targetType)) {
                     Object converted = convertNumber(n, targetType);
                     if (converted != null) tf.set(target, converted);
                     continue;
                 }
 
-                // Set -> List (useful for seats)
                 if (value instanceof Set<?> s && List.class.isAssignableFrom(targetType)) {
                     tf.set(target, new ArrayList<>(s));
                     continue;
                 }
 
-                // Enum from String (when source string equals enum constant)
                 if (value instanceof String str && tf.getType().isEnum()) {
                     @SuppressWarnings("unchecked")
                     Class<? extends Enum> enumType = (Class<? extends Enum>) tf.getType();
@@ -198,14 +191,14 @@ public class Mapper {
     private static boolean isSafeToReflect(Class<?> c) {
         String p = (c.getPackageName() == null) ? "" : c.getPackageName();
 
-        // block JDK + frameworks (avoid module access issues)
+
         if (p.startsWith("java.") || p.startsWith("javax.") || p.startsWith("jakarta.")
                 || p.startsWith("sun.") || p.startsWith("com.sun.")
                 || p.startsWith("org.springframework.")) {
             return false;
         }
 
-        // avoid flattening/reflecting wrappers and simple types
+
         if (c.isPrimitive() || c.isEnum() || c == String.class
                 || Number.class.isAssignableFrom(c)
                 || c == Boolean.class || c == Character.class) {
