@@ -29,12 +29,14 @@ public class WaitListEntryController {
         );
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{userId}")
     public String getAllWaitLists(Model model, @PathVariable long userId) {
         // get user id from jwt
         model.addAttribute("waitList-list", waitListEntryService.getAllWaitListByUser(userId));
-        return "waitLists/WaitLists";
+        return "waitList/waitList";
     }
+
+
 
     @PostMapping("/submitForm")
     public String setEvent(@ModelAttribute WaitListEntryDto w) {

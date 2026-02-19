@@ -144,6 +144,27 @@ public class EventRepo implements IEventRepository {
     }
 
     @Override
+    public List<String> getBookingSeatsForEvent(long eventId, String bookId) {
+        var event = mockEvents.stream()
+                .filter(e -> e.getId() == eventId)
+                .findFirst()
+                .orElse(null);
+
+        if (event == null) return List.of();
+
+        var seatMap = eventsSeat.get(event.getTitle());
+        if (seatMap == null) return List.of();
+
+        var a = seatMap.entrySet()
+                .stream()
+                .filter(e -> e.getValue().bookingId != null && e.getValue().bookingId.equals(bookId))
+                .map(java.util.Map.Entry::getKey)
+                .sorted()
+                .toList();
+        return a;
+    }
+
+    @Override
     public boolean unAssignSeat(long eventId, String eventTitle, String bookId) {
         if (eventsSeat.containsKey(eventTitle)) {
             var seatMap = (ConcurrentHashMap<String, SeatReserver>) eventsSeat.get(eventTitle);

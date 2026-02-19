@@ -12,13 +12,13 @@
         tr:nth-child(even) { background-color: #f2f2f2; }
 
         .toolbar { display:flex; gap:10px; align-items:center; margin-bottom: 10px; }
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; text-decoration:none; display:inline-block; }
-        .btn-add { background-color:#4CAF50; color:white; }
-        .btn-view { background-color:#2d89ef; color:white; }
-        .btn-edit { background-color:#f0ad4e; color:white; }
-        .btn-delete { background-color:#d9534f; color:white; }
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; text-decoration: none; display:inline-block; }
+        .btn-add { background-color: #4CAF50; color: white; }
+        .btn-view { background-color: #2d89ef; color: white; }
+        .btn-edit { background-color: #f0ad4e; color: white; }
+        .btn-delete { background-color: #d9534f; color: white; }
         .actions { display:flex; gap:8px; flex-wrap:wrap; }
-        .muted { color:#666; font-size: 13px; }
+        .muted { color:#666; }
     </style>
 </head>
 <body>
@@ -26,14 +26,18 @@
 <h1>Bookings</h1>
 
 <div class="toolbar">
-    <!-- если хочешь создавать booking вручную -->
-    <a class="btn btn-add" th:href="@{/bookings/form}">Add New Booking</a>
+    <form th:action="@{/bookings/form}" method="get" style="display:flex; gap:10px; align-items:center;">
+        <label>
+            <input type="text" name="id" placeholder="Booking ID" required>
+        </label>
+        <button type="submit" class="btn btn-add">Open</button>
+    </form>
 </div>
 
 <table th:if="${bookingList != null and !bookingList.isEmpty()}">
     <thead>
     <tr>
-        <th>Booking ID</th>
+        <th>ID</th>
         <th>Status</th>
         <th>User ID</th>
         <th>Event ID</th>
@@ -45,46 +49,45 @@
 
     <tbody>
     <tr th:each="b : ${bookingList}">
-        <td th:text="${b.id}">bk-0001</td>
-        <td th:text="${b.status}">WaitingPayment</td>
+        <td th:text="${b.id}">bk-1</td>
+        <td th:text="${b.status}">WAITING_PAYMENT</td>
         <td th:text="${b.userId}">1</td>
         <td th:text="${b.eventId}">10</td>
         <td th:text="${b.eventTitle}">Spring Boot Workshop</td>
 
-        <!-- seats as comma separated -->
-        <td th:text="${b.seats != null ? #strings.listJoin(b.seats, ', ') : ''}">A1, A2</td>
+        <!-- show seats as comma separated -->
+        <td th:text="${b.seats != null ? #strings.listJoin(b.seats, ', ') : '—'}">A1, A2</td>
 
         <td>
             <div class="actions">
-                <!-- DETAILS -->
+
+                <!-- Details -->
                 <a class="btn btn-view"
                    th:href="@{/bookings/details/view/{id}(id=${b.id})}">
                     Details
                 </a>
 
-                <!-- EDIT (opens form) -->
+                <!-- Edit (go to form with id) -->
                 <a class="btn btn-edit"
-                   th:href="@{/bookings/form/{id}(id=${b.id})}">
+                   th:href="@{/bookings/form/{id}(id=${b.eventId})}">
                     Edit
                 </a>
 
-                <!-- DELETE/CANCEL (POST) -->
+                <!-- Delete (POST) -->
                 <form th:action="@{/bookings/delete/{id}(id=${b.id})}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-delete"
-                            onclick="return confirm('Cancel this booking?');">
-                        Cancel
+                            onclick="return confirm('Cancel/Delete this booking?');">
+                        Delete
                     </button>
                 </form>
-            </div>
-            <div class="muted" th:if="${b.eventLocation != null}">
-                <span th:text="${b.eventLocation}">Room 101</span>
+
             </div>
         </td>
     </tr>
     </tbody>
 </table>
 
-<p th:if="${bookingList == null or bookingList.isEmpty()}">No bookings available.</p>
+<p class="muted" th:if="${bookingList == null or bookingList.isEmpty()}">No bookings available.</p>
 
 </body>
 </html>

@@ -35,4 +35,6 @@ public interface IEventRepository {
     boolean assignSeat(long eventId, String eventTitle, String bookingId, String seat);
 
     List<String> getSeatsForEvent(long eventId);
+
+    List<String> getBookingSeatsForEvent(long eventId, String bookId);
 }

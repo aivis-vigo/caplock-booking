@@ -46,12 +46,14 @@ public class FormShower {
 
 
                 if (dto == null) {
+
                     dto = dtoClass.getDeclaredConstructor().newInstance();
                 }
             } else {
                 dto = dtoClass.getDeclaredConstructor().newInstance();
             }
 
+            model.addAttribute("editing", editing);
             model.addAttribute(attrName, dto);
             model.addAttribute("formName", editing ? "Edit" : "Add");
             model.addAttribute("formButton", editing ? "Update" : "Place " + attrName);

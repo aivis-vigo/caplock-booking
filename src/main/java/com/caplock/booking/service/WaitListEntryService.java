@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class WaitListEntryService implements IWaitListEntryService {
@@ -57,14 +58,14 @@ public class WaitListEntryService implements IWaitListEntryService {
 
     @Override
     public boolean setWaitListToUser(long userId, WaitListEntryDto waitListEntryDto) {
-        WaitListEntryDao dao = Mapper.splitOne(waitListEntryDto, WaitListEntryDao.class);
+        WaitListEntryDao dao = Mapper.splitOne(waitListEntryDto, WaitListEntryDao.class, Map.of());
         return waitRepo.setWaitListToUser(userId, dao);
     }
 
     @Override
     public boolean moveToBooking(WaitListEntryDto waitDto, BookingDto BookingDto) {
-        WaitListEntryDao waitListEntryDao = Mapper.splitOne(waitDto, WaitListEntryDao.class);
-        BookingDao bookingDao =Mapper.splitOne(BookingDto, BookingDao.class);
+        WaitListEntryDao waitListEntryDao = Mapper.splitOne(waitDto, WaitListEntryDao.class, Map.of());
+        BookingDao bookingDao =Mapper.splitOne(BookingDto, BookingDao.class, Map.of());
         return waitRepo.moveToBooking(waitListEntryDao, bookingDao);
     }
 }
