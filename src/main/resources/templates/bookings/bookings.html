@@ -5,63 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookings</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .btn {
-            padding: 8px 12px;
-            margin: 5px;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        .btn-add {
-            background-color: #4CAF50;
-            color: white;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; vertical-align: middle; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+
+        .toolbar { display:flex; gap:10px; align-items:center; margin-bottom: 10px; }
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; text-decoration:none; display:inline-block; }
+        .btn-add { background-color:#4CAF50; color:white; }
+        .btn-view { background-color:#2d89ef; color:white; }
+        .btn-edit { background-color:#f0ad4e; color:white; }
+        .btn-delete { background-color:#d9534f; color:white; }
+        .actions { display:flex; gap:8px; flex-wrap:wrap; }
+        .muted { color:#666; font-size: 13px; }
     </style>
 </head>
 <body>
-<h1>Bookings</h1>
-<a th:href="@{/bookings/form}" class="btn btn-add">Add New Booking</a>
 
-<table th:if="${bookings != null and bookings.size() > 0}">
+<h1>Bookings</h1>
+
+<div class="toolbar">
+    <!-- если хочешь создавать booking вручную -->
+    <a class="btn btn-add" th:href="@{/bookings/form}">Add New Booking</a>
+</div>
+
+<table th:if="${bookingList != null and !bookingList.isEmpty()}">
     <thead>
     <tr>
-        <th>ID</th>
-        <th>User Name</th>
-        <th>Event</th>
-        <th>Booking Date</th>
+        <th>Booking ID</th>
         <th>Status</th>
+        <th>User ID</th>
+        <th>Event ID</th>
+        <th>Event Title</th>
+        <th>Seats</th>
+        <th>Actions</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="booking : ${bookings}">
-        <td th:text="${booking.id}"><a th:href="@{/bookings/details/view/1}">ABC</a></td>
-        <td th:text="${booking.userId}"></td>
-        <td th:text="${booking.eventTitle}"></td>
 
+    <tbody>
+    <tr th:each="b : ${bookingList}">
+        <td th:text="${b.id}">bk-0001</td>
+        <td th:text="${b.status}">WaitingPayment</td>
+        <td th:text="${b.userId}">1</td>
+        <td th:text="${b.eventId}">10</td>
+        <td th:text="${b.eventTitle}">Spring Boot Workshop</td>
+
+        <!-- seats as comma separated -->
+        <td th:text="${b.seats != null ? #strings.listJoin(b.seats, ', ') : ''}">A1, A2</td>
+
+        <td>
+            <div class="actions">
+                <!-- DETAILS -->
+                <a class="btn btn-view"
+                   th:href="@{/bookings/details/view/{id}(id=${b.id})}">
+                    Details
+                </a>
+
+                <!-- EDIT (opens form) -->
+                <a class="btn btn-edit"
+                   th:href="@{/bookings/form/{id}(id=${b.id})}">
+                    Edit
+                </a>
+
+                <!-- DELETE/CANCEL (POST) -->
+                <form th:action="@{/bookings/delete/{id}(id=${b.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-delete"
+                            onclick="return confirm('Cancel this booking?');">
+                        Cancel
+                    </button>
+                </form>
+            </div>
+            <div class="muted" th:if="${b.eventLocation != null}">
+                <span th:text="${b.eventLocation}">Room 101</span>
+            </div>
+        </td>
     </tr>
     </tbody>
 </table>
 
-<p th:if="${bookings == null or bookings.size() == 0}">No bookings available.</p>
+<p th:if="${bookingList == null or bookingList.isEmpty()}">No bookings available.</p>
+
 </body>
 </html>
