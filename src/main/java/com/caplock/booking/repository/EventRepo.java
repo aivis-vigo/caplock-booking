@@ -84,6 +84,7 @@ public class EventRepo implements IEventRepository {
     @Override
     public boolean setEvent(EventDao event) {
         // In a real scenario, you'd check if ID exists; here we just add
+        event.setId(mockEvents.getLast().getId() + 1);
         return mockEvents.add(event);
     }
 
@@ -169,8 +170,10 @@ public class EventRepo implements IEventRepository {
         if (eventsSeat.containsKey(eventTitle)) {
             var seatMap = (ConcurrentHashMap<String, SeatReserver>) eventsSeat.get(eventTitle);
 
-            var reservedSeats = seatMap.keySet().stream()
-                    .filter(b -> Objects.equals(b, bookId)).toList();
+            var reservedSeats = seatMap.entrySet().stream()
+                    .filter(e -> e.getValue() != null && Objects.equals(e.getValue().bookingId(), bookId))
+                    .map(Map.Entry::getKey)
+                    .toList();
             try {
                 assert !reservedSeats.isEmpty();
                 lock.lock();

@@ -40,8 +40,8 @@
 </head>
 <body>
 <h1>Events</h1>
-<a href="/events/details/form" class="btn btn-add">Edit Event</a>
-
+<!--<a href="/events/details/form" class="btn btn-add">Edit Event</a>-->
+<a href="/events/" class="btn btn-primary">Back</a>
 <table th:if="${eventList != null and eventList.size() > 0}">
     <thead>
     <tr>
@@ -53,7 +53,7 @@
     </thead>
     <tbody>
     <tr th:each="event : ${eventList}">
-        <td th:text="${event.getBookedSeats()()}"></td>
+        <td th:text="${event.getBookedSeats()}"></td>
         <td th:text="${event.getBookingStartTime()}"></td>
         <td th:text="${event.getCapacity()}"></td>
         <td th:text="${event.getDescription()}"></td>

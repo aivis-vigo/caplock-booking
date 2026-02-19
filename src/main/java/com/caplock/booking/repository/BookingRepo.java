@@ -49,7 +49,7 @@ public class BookingRepo implements IBookingRepository{
 
     @Override
     public boolean cancelBooking(String bookingId) {
-        return mockBookings.removeIf(b -> b.getId().equals(String.valueOf(bookingId)));
+        return mockBookings.removeIf(b -> b.getId().equalsIgnoreCase(bookingId));
     }
 
     @Override

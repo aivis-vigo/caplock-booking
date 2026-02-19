@@ -69,7 +69,7 @@
 
                 <!-- Edit (go to form with id) -->
                 <a class="btn btn-edit"
-                   th:href="@{/bookings/form/{id}(id=${b.eventId})}">
+                   th:href="@{/bookings/form/{eventId}/{id}(id=${b.id}, eventId=${b.eventId})}">
                     Edit
                 </a>
 

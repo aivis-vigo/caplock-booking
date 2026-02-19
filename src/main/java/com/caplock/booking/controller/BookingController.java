@@ -5,6 +5,7 @@ import com.caplock.booking.entity.dto.BookingDto;
 import com.caplock.booking.entity.dto.BookingFormDto;
 import com.caplock.booking.service.IBookingService;
 import com.caplock.booking.service.IEventService;
+import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.*;
@@ -34,7 +35,7 @@ public class BookingController {
         if (id == null || id.isBlank()) {
             return "redirect:/bookings/form/"; // or open add form
         }
-        return "redirect:/bookings/form/" + id+"/";
+        return "redirect:/bookings/form/" + id + "/";
     }
 
     @GetMapping("/")
@@ -46,7 +47,7 @@ public class BookingController {
         return "bookings/bookings";
     }
 
-    @GetMapping({"/form/{eventId}/", "form/{eventId}/{id}"})
+    @GetMapping({"/form/{eventId}/", "/form/{eventId}/{id}"})
     public String form(Model model, @PathVariable long eventId, @PathVariable(required = false) String id) {
         long userId = 1;
         boolean editing = id != null;
@@ -57,6 +58,7 @@ public class BookingController {
         form.setUserId(userId);
 
         var seats = eventService.getSeatsFreeForEvent(eventId);
+        model.addAttribute("editing", id != null);
         model.addAttribute("availableSeats", seats);
         model.addAttribute("bookingForm", form);
         model.addAttribute("formName", editing ? "Edit" : "Add");
@@ -67,6 +69,27 @@ public class BookingController {
     @PostMapping("/submitForm")
     public String setBooking(@ModelAttribute("bookingForm") BookingFormDto booking) {
         var result = bookingService.setNewBooking(booking);
+
+        boolean isSuccess = result.getValue0();
+        String message = result.getValue1();
+
+        if (!isSuccess && message.contains("Booking full")) {
+            int userId = (int) -1;
+            // show message
+            return "redirect:/waitList/form/" + userId;
+        } else if (!isSuccess) {
+            // show message
+            return "redirect:/bookings/form/" + booking.getEventId() + "/";
+        }
+
+        return "redirect:/bookings/";
+
+    }
+
+    @PutMapping("/submitEditForm")
+    public String updateBooking(@ModelAttribute("bookingForm") BookingFormDto booking) {
+        var result = bookingService.cancelBooking(booking.getBookingId()) ?
+                bookingService.setNewBooking(booking) : new Pair<>(false, "Error");
 
         boolean isSuccess = result.getValue0();
         String message = result.getValue1();

@@ -29,8 +29,8 @@
         <div class="label">Status</div>
         <div th:text="${bookingDetails.bookingDto.status}">OPEN</div>
 
-        <div class="label">Quantity</div>
-        <div th:text="${bookingDetails.bookingDto.qty}">1</div>
+<!--        <div class="label">Quantity</div>-->
+<!--        <div th:text="${bookingDetails.bookingDto.qty}">1</div>-->
 
         <div class="label">User ID</div>
         <div th:text="${bookingDetails.bookingDto.userId}">1</div>
@@ -41,7 +41,7 @@
                 <button type="submit">Cancel Booking</button>
             </form>
 
-            <a class="btn btn-back" th:href="@{/bookings/Bookings}">Back</a>
+            <a class="btn btn-back" th:href="@{/bookings/}">Back</a>
         </div>
     </div>
 

@@ -23,7 +23,7 @@ public class EventDetailsController {
 
     @GetMapping("/view/{id}")
     public String getDetails(@PathVariable long id, Model model) {
-        model.addAttribute("eventDetails", List.of(eventService.getDetails(id).getDescription()));
+        model.addAttribute("eventList", List.of(eventService.getDetails(id)));
         return "events/eventDetails";
     }
 

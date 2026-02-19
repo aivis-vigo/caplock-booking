@@ -30,15 +30,16 @@ public class BookingService implements IBookingService {
         if (bookingDao == null) return null;
 
         // Map bookingDao -> BookingDto (flat -> flat)
-        BookingDto bookingDto = Mapper.combine(BookingDto.class, bookingDao);
+        BookingDto bookingDto = Mapper.combine(BookingDto.class, bookingDao, Map.of("bookingId", "id"));
 
         // Fetch/map event separately using eventId from booking
         var eventDao = eventService.getEventById(bookingDao.getEventId());
-        var eventDto = (eventDao == null) ? null : Mapper.combine(EventDto.class, eventDao);
+        var eventDto = (eventDao == null) ? null : Mapper.combine(EventDto.class, eventDao, Map.of("bookingId", "id"));
 
-        var form = Mapper.combine(BookingFormDto.class, eventDto, bookingDto);
+        var form = Mapper.combine(BookingFormDto.class, eventDto, bookingDto, Map.of("bookingId", "id"));
         assert eventDto != null;
         form.setSeats(eventService.getBookingSeatsForEvent(eventDto.getId(), bookingDao.getId()));
+        form.setBookingId(id);
         return form;
     }
 
