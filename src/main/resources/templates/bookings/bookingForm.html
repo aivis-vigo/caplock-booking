@@ -27,7 +27,7 @@
 </head>
 <body>
 
-<h1>Book Seats</h1>
+<h1 th:text="${formName != null ? formName + ' Booking' : 'Book Seats'}">Book Seats</h1>
 
 <!-- Optional: show error message from controller -->
 <div class="card" th:if="${errorMessage != null}">
@@ -87,33 +87,63 @@
             </div>
         </div>
 
-        <!-- Booking input -->
         <div class="col">
             <div class="card">
-                <h2 style="margin-top:0;">Select seats</h2>
+                <h2 style="margin-top:0;">Seat</h2>
 
-                <label class="label" for="seats">Available seats</label>
-                <select id="seats" multiple th:field="*{seats}">
-                    <!-- Controller must provide availableSeats: List<String> -->
-                    <option th:each="s : ${availableSeats}" th:value="${s}" th:text="${s}">A1</option>
-                </select>
+                <!-- IMPORTANT: bind into seats[0].* -->
+                <div class="grid3">
+                    <div>
+                        <label class="label" for="section">Section</label>
+                        <input id="section"
+                               type="text"
+                               name="seats[0].section"
+                               th:value="${bookingForm.seats != null and bookingForm.seats.size() > 0 ? bookingForm.seats.get(0).section() : ''}"
+                               placeholder="e.g. A1"
+                               required>
+                    </div>
 
-                <!-- Optional: show validation errors if you use BindingResult -->
+                    <div>
+                        <label class="label" for="row">Row</label>
+                        <input id="row"
+                               type="text"
+                               name="seats[0].row"
+                               th:value="${bookingForm.seats != null and bookingForm.seats.size() > 0 ? bookingForm.seats.get(0).row() : ''}"
+                               placeholder="e.g. 03"
+                               required>
+                    </div>
+
+                    <div>
+                        <label class="label" for="seatNumber">Seat #</label>
+                        <input id="seatNumber"
+                               type="text"
+                               name="seats[0].seatNumber"
+                               th:value="${bookingForm.seats != null and bookingForm.seats.size() > 0 ? bookingForm.seats.get(0).seatNumber() : ''}"
+                               placeholder="e.g. 12"
+                               required>
+                    </div>
+                </div>
+
+                <!-- If you use BindingResult for seats, this will show errors -->
                 <div class="error" th:if="${#fields.hasErrors('seats')}" th:errors="*{seats}">
                     Seats error
                 </div>
 
                 <div class="actions">
-                    <button type="submit" class="btn btn-primary">Submit booking</button>
+                    <button type="submit"
+                            class="btn btn-primary"
+                            th:text="${formButton != null ? formButton : 'Submit booking'}">
+                        Submit booking
+                    </button>
                     <a class="btn btn-cancel" th:href="@{/bookings/}">Cancel</a>
                 </div>
 
-                <!-- Optional: show what userId is (read-only, not editable) -->
                 <p class="muted" style="margin:12px 0 0;">
                     Booking for user ID: <strong th:text="*{userId}">1</strong>
                 </p>
             </div>
         </div>
+
     </div>
 </form>
 

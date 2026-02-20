@@ -12,6 +12,6 @@ import lombok.Setter;
 public class BookingDetailsDto {
     private BookingDto bookingDto;
     private EventDto eventDto;
-    //PayInvDto
+    private PaymentDTO paymentDto;
 
 }

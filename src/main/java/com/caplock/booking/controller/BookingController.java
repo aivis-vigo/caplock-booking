@@ -3,6 +3,7 @@ package com.caplock.booking.controller;
 import com.caplock.booking.controller.helper.FormShower;
 import com.caplock.booking.entity.dto.BookingDto;
 import com.caplock.booking.entity.dto.BookingFormDto;
+import com.caplock.booking.entity.dto.Seat;
 import com.caplock.booking.service.IBookingService;
 import com.caplock.booking.service.IEventService;
 import org.javatuples.Pair;
@@ -58,7 +59,7 @@ public class BookingController {
         form.setUserId(userId);
 
         var seats = eventService.getSeatsFreeForEvent(eventId);
-        model.addAttribute("editing", id != null);
+        model.addAttribute("editing", editing);
         model.addAttribute("availableSeats", seats);
         model.addAttribute("bookingForm", form);
         model.addAttribute("formName", editing ? "Edit" : "Add");
@@ -68,6 +69,9 @@ public class BookingController {
 
     @PostMapping("/submitForm")
     public String setBooking(@ModelAttribute("bookingForm") BookingFormDto booking) {
+        booking.setSeats(List.of(new Seat("A", "1", "2")));
+
+
         var result = bookingService.setNewBooking(booking);
 
         boolean isSuccess = result.getValue0();
@@ -88,9 +92,16 @@ public class BookingController {
 
     @PutMapping("/submitEditForm")
     public String updateBooking(@ModelAttribute("bookingForm") BookingFormDto booking) {
-        var result = bookingService.cancelBooking(booking.getBookingId()) ?
-                bookingService.setNewBooking(booking) : new Pair<>(false, "Error");
 
+        booking.setSeats(List.of(new Seat("A", "1", "2")));
+
+
+        boolean cancelSuccess = bookingService.cancelBooking(booking.getBookingId());
+
+        if (!cancelSuccess) {
+            return "redirect:/bookings/form/" + booking.getEventId() + "/";
+        }
+        var result = bookingService.setNewBooking(booking);
         boolean isSuccess = result.getValue0();
         String message = result.getValue1();
 

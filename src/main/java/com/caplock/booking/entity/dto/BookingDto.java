@@ -20,5 +20,5 @@ public class BookingDto {
     private String eventDescription;
     private String eventLocation;
     private long userId;
-    private List<String> seats;
+    private List<Seat> seats;
 }

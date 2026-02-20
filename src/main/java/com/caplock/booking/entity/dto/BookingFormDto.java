@@ -25,5 +25,8 @@ public class BookingFormDto {
 
     // --- User input ---
     @Builder.Default
-    private List<String> seats = new ArrayList<>();
+    private List<Seat> seats = new ArrayList<>();
+
 }
+
+;
