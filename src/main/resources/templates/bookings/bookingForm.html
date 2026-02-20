@@ -33,14 +33,20 @@
 <div class="card" th:if="${errorMessage != null}">
     <div class="error" th:text="${errorMessage}">Something went wrong</div>
 </div>
+<form class="card"
+      th:object="${bookingForm}"
+      th:action="${editing}
+                 ? @{/bookings/submitEditForm}
+                 : @{/bookings/submitForm}"
+      method="post">
 
-<form class="card" th:object="${bookingForm}" th:action="@{/bookings/submitForm}" method="post">
+    <input type="hidden" name="_method" value="PUT" th:if="${editing}" />
 
     <!-- Hidden fields that must be posted -->
     <input type="hidden" th:field="*{eventId}">
     <input type="hidden" th:field="*{userId}">
     <!-- Optional if you support editing bookings -->
-    <input type="hidden" th:field="*{bookingId}">
+    <input type="hidden" name="bookingId" th:value="*{bookingId}">
     <!-- Optional if you keep status in form -->
     <input type="hidden" th:field="*{status}">
 

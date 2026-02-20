@@ -48,10 +48,10 @@ public class EventController {
     public String putEvent(@ModelAttribute EventDetailsDto event, @PathVariable long id) {
         // get user id from jwt
         if (   eventService.updateEvent(id, event))
-            return "redirect:events/";
+            return "redirect:/events/";
         else {
             //show error
-            return "redirect:events/eventDetails";
+            return "redirect:/events/";
         }
     }
     @PostMapping("/delete/{id}")
