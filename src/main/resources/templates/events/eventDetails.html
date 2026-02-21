@@ -1,66 +1,120 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookings</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .btn {
-            padding: 8px 12px;
-            margin: 5px;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        .btn-add {
-            background-color: #4CAF50;
-            color: white;
-        }
-    </style>
-</head>
+<head th:replace="~{fragments/layout :: head('Event Details')}"></head>
 <body>
-<h1>Events</h1>
-<!--<a href="/events/details/form" class="btn btn-add">Edit Event</a>-->
-<a href="/events/" class="btn btn-primary">Back</a>
-<table th:if="${eventList != null and eventList.size() > 0}">
-    <thead>
-    <tr>
-        <th>getBookedSeats</th>
-        <th>getBookingStartTime</th>
-        <th>getCapacity</th>
-        <th>getDescription</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="event : ${eventList}">
-        <td th:text="${event.getBookedSeats()}"></td>
-        <td th:text="${event.getBookingStartTime()}"></td>
-        <td th:text="${event.getCapacity()}"></td>
-        <td th:text="${event.getDescription()}"></td>
-    </tr>
-    </tbody>
-</table>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
 
-<p th:if="${eventList != null and eventList.size() == 0}">No events available.</p>
+<main th:with="event=${eventList != null and !eventList.isEmpty() ? eventList[0] : null}">
+
+    <div class="page-header">
+        <h1 th:text="${event != null and event.eventDto != null ? event.eventDto.title : 'Event Details'}">Event Details</h1>
+        <div class="btn-group">
+            <a class="btn btn-edit"
+               th:if="${event != null and event.eventDto != null}"
+               th:href="@{/events/form/{id}(id=${event.eventDto.id})}">Edit</a>
+            <a class="btn btn-ghost" th:href="@{/events/}">← Back to Events</a>
+        </div>
+    </div>
+
+    <div th:if="${event == null}" class="card">
+        <p class="empty">Event not found.</p>
+    </div>
+
+    <div th:if="${event != null}" class="card" style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
+
+        <!-- Left column -->
+        <div>
+            <h2>Event Info</h2>
+            <dl class="kv">
+                <dt>ID</dt>
+                <dd th:text="${event.eventDto?.id}">—</dd>
+
+                <dt>Title</dt>
+                <dd th:text="${event.eventDto?.title}">—</dd>
+
+                <dt>Category</dt>
+                <dd th:text="${event.eventDto?.category}">—</dd>
+
+                <dt>Status</dt>
+                <dd>
+                    <span class="badge"
+                          th:classappend="${event.eventDto?.status != null and event.eventDto.status.name() == 'Open'} ? 'badge-green'
+                                        : (${event.eventDto?.status != null and event.eventDto.status.name() == 'Closed'} ? 'badge-red' : 'badge-gray')"
+                          th:text="${event.eventDto?.status}">—</span>
+                </dd>
+
+                <dt>Location</dt>
+                <dd th:text="${event.eventDto?.location}">—</dd>
+
+                <dt>Duration</dt>
+                <dd th:text="${event.eventDto?.duration != null ? event.eventDto.duration + ' min' : '—'}">—</dd>
+
+                <dt>Description</dt>
+                <dd th:text="${event.description ?: '—'}">—</dd>
+            </dl>
+        </div>
+
+        <!-- Right column -->
+        <div>
+            <h2>Schedule &amp; Booking</h2>
+            <dl class="kv">
+                <dt>Event Date</dt>
+                <dd th:text="${event.eventDto?.eventDate != null
+                              ? #temporals.format(event.eventDto.eventDate, 'MMM d, yyyy HH:mm')
+                              : '—'}">—</dd>
+
+                <dt>Start Time</dt>
+                <dd th:text="${event.eventDto?.startTime != null
+                              ? #temporals.format(event.eventDto.startTime, 'MMM d, yyyy HH:mm')
+                              : '—'}">—</dd>
+
+                <dt>End Time</dt>
+                <dd th:text="${event.eventDto?.endTime != null
+                              ? #temporals.format(event.eventDto.endTime, 'MMM d, yyyy HH:mm')
+                              : '—'}">—</dd>
+
+                <dt>Booking Opens</dt>
+                <dd th:text="${event.bookingStartTime != null
+                              ? #temporals.format(event.bookingStartTime, 'MMM d, yyyy HH:mm')
+                              : '—'}">—</dd>
+
+                <dt>Booking Deadline</dt>
+                <dd th:text="${event.bookingDeadline != null
+                              ? #temporals.format(event.bookingDeadline, 'MMM d, yyyy HH:mm')
+                              : '—'}">—</dd>
+
+                <dt>Capacity</dt>
+                <dd th:text="${event.capacity}">—</dd>
+
+                <dt>Booked Seats</dt>
+                <dd th:text="${event.bookedSeats}">—</dd>
+
+                <dt>Available</dt>
+                <dd th:text="${event.capacity - event.bookedSeats}">—</dd>
+            </dl>
+
+            <div style="margin-top:1.5rem;">
+                <a class="btn btn-primary"
+                   th:if="${event.eventDto != null}"
+                   th:href="@{/bookings/form/{eventId}/(eventId=${event.eventDto.id})}">
+                    Book This Event
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete -->
+    <div class="card" th:if="${event != null and event.eventDto != null}" style="background:#fff8f8; border-color:#fca5a5;">
+        <h2 style="color:#991b1b;">Danger Zone</h2>
+        <p style="font-size:.875rem; color:#64748b; margin-bottom:1rem;">Permanently delete this event and all associated data.</p>
+        <form th:action="@{/events/details/delete/{id}(id=${event.eventDto.id})}" method="post">
+            <button type="submit" class="btn btn-danger"
+                    onclick="return confirm('Delete this event? This cannot be undone.');">
+                Delete Event
+            </button>
+        </form>
+    </div>
+
+</main>
 </body>
 </html>

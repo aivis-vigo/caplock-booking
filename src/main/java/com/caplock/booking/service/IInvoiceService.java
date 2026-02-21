@@ -10,5 +10,5 @@ public interface IInvoiceService {
     InvoiceDTO getById(Long id);
     InvoiceDTO create(InvoiceDTO dto);
     void delete(Long id);
-    InvoiceDTO genereteInvoice(Long bookingId, BigDecimal amount );
+    InvoiceDTO genereteInvoice(String bookingId, BigDecimal amount);
 }

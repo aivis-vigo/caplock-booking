@@ -52,7 +52,7 @@ public class InvoiceServiceImpl implements IInvoiceService{
     }
 
     @Override
-    public InvoiceDTO genereteInvoice(Long bookingId, BigDecimal amount) {
+    public InvoiceDTO genereteInvoice(String bookingId, BigDecimal amount) {
         try {
             String invoiceNumber = "INV-" + UUID.randomUUID().toString().substring(0, 8);
             LocalDateTime now = LocalDateTime.now();

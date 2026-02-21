@@ -6,10 +6,12 @@ import com.caplock.booking.entity.dto.PaymentDTO;
 public class PaymentMapper {
     public static PaymentDTO toDTO(PaymentDAO dao) {
         PaymentDTO dto = new PaymentDTO();
-        dto.setId(dto.getId());
-        dto.setBookingId(dto.getBookingId());
-        dto.setStatus(dto.getStatus());
-        dto.setPaidAt(dto.getPaidAt());
+        dto.setId(dao.getId());
+        dto.setBookingId(dao.getBookingId());
+        dto.setStatus(dao.getStatus());
+        dto.setAmount(dao.getAmount());
+        dto.setPaymentMethod(dao.getPaymentMethod());
+        dto.setPaidAt(dao.getPaidAt());
         return dto;
     }
 

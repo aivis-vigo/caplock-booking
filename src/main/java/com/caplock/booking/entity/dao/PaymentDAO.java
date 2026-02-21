@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PaymentDAO {
     private Long id;
-    private Long bookingId;
+    private String bookingId;
     private String status;
     private BigDecimal amount;
     private String paymentMethod;

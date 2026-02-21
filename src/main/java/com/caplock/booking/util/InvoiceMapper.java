@@ -8,7 +8,7 @@ public class InvoiceMapper {
         InvoiceDTO dto = new InvoiceDTO();
         dto.setAmount(dao.getAmount());
         dto.setId(dao.getId());
-        dto.setCreatedAt(dto.getCreatedAt());
+        dto.setCreatedAt(dao.getCreatedAt());
         dto.setInvoiceNumber(dao.getInvoiceNumber());
         return dto;
     }

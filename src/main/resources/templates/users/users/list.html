@@ -1,58 +1,48 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Greeting Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-
-        .container {
-            margin-top: 100px;
-        }
-
-        .greeting {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        .button {
-            padding: 10px 20px;
-            background: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .button:hover {
-            background: #0056b3;
-        }
-    </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Users')}"></head>
 <body>
-<div class="container">
-    <h1>List</h1>
-    <div th:each="user : ${users}">
-        <div th:text="${user.id}"></div>
-        <div th:text="${user.name}"></div>
-        <div th:text="${user.role}"></div>
-        <div th:text="${user.createdAt}"></div>
-        <div th:text="${user.updatedAt}"></div>
-        <a th:href="@{/user/edit/{id}(id=${user.id})}">Edit</a>
-        <form th:action="@{/user/{id}(id=${user.id})}" method="post">
-            <input type="hidden" name="_method" value="DELETE">
-            <button type="submit">Delete</button>
-        </form>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <div class="page-header">
+        <h1>Users</h1>
+        <a th:href="@{/user/create}" class="btn btn-primary">+ New User</a>
     </div>
-    <button class="button" onclick="sayHello()">Say Hello</button>
-</div>
-<script>
-    function sayHello() {
-        alert('Hello, there!');
-    }
-</script>
+
+    <div class="card" style="padding:0; overflow:hidden;">
+        <table th:if="${users != null and !users.isEmpty()}">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}">1</td>
+                <td th:text="${user.name}">John Doe</td>
+                <td th:text="${user.role}">USER</td>
+                <td th:text="${user.createdAt}">—</td>
+                <td>
+                    <div class="btn-group">
+                        <a class="btn btn-view" th:href="@{/user/{id}(id=${user.id})}">Details</a>
+                        <a class="btn btn-edit" th:href="@{/user/edit/{id}(id=${user.id})}">Edit</a>
+                        <form th:action="@{/user/{id}(id=${user.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Delete this user?');">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="empty" th:if="${users == null or users.isEmpty()}">No users found.</p>
+    </div>
+</main>
 </body>
 </html>

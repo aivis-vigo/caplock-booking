@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class InvoiceDAO {
     private Long id;
-    private Long bookingId;
+    private String bookingId;
     private BigDecimal amount;
     private String invoiceNumber;
     private LocalDateTime createdAt;

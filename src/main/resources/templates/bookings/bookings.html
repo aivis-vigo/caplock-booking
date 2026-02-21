@@ -1,93 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookings</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; vertical-align: middle; }
-        th { background-color: #4CAF50; color: white; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-
-        .toolbar { display:flex; gap:10px; align-items:center; margin-bottom: 10px; }
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; text-decoration: none; display:inline-block; }
-        .btn-add { background-color: #4CAF50; color: white; }
-        .btn-view { background-color: #2d89ef; color: white; }
-        .btn-edit { background-color: #f0ad4e; color: white; }
-        .btn-delete { background-color: #d9534f; color: white; }
-        .actions { display:flex; gap:8px; flex-wrap:wrap; }
-        .muted { color:#666; }
-    </style>
-</head>
+<head th:replace="~{fragments/layout :: head('Bookings')}"></head>
 <body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
 
-<h1>Bookings</h1>
+<main>
+    <div class="page-header">
+        <h1>My Bookings</h1>
+        <form th:action="@{/bookings/form}" method="get" style="display:flex; gap:.5rem; align-items:center;">
+            <input type="text" name="id" placeholder="Booking ID" style="padding:.45rem .75rem; border:1px solid #e2e8f0; border-radius:6px; font-size:.875rem; width:180px;">
+            <button type="submit" class="btn btn-primary">Open</button>
+        </form>
+    </div>
 
-<div class="toolbar">
-    <form th:action="@{/bookings/form}" method="get" style="display:flex; gap:10px; align-items:center;">
-        <label>
-            <input type="text" name="id" placeholder="Booking ID" required>
-        </label>
-        <button type="submit" class="btn btn-add">Open</button>
-    </form>
-</div>
-
-<table th:if="${bookingList != null and !bookingList.isEmpty()}">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Status</th>
-        <th>User ID</th>
-        <th>Event ID</th>
-        <th>Event Title</th>
-        <th>Seats</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr th:each="b : ${bookingList}">
-        <td th:text="${b.id}">bk-1</td>
-        <td th:text="${b.status}">WAITING_PAYMENT</td>
-        <td th:text="${b.userId}">1</td>
-        <td th:text="${b.eventId}">10</td>
-        <td th:text="${b.eventTitle}">Spring Boot Workshop</td>
-
-        <!-- show seats as comma separated -->
-        <td th:text="${b.seats != null ? #strings.listJoin(b.seats, ', ') : '—'}">A1, A2</td>
-
-        <td>
-            <div class="actions">
-
-                <!-- Details -->
-                <a class="btn btn-view"
-                   th:href="@{/bookings/details/view/{id}(id=${b.id})}">
-                    Details
-                </a>
-
-                <!-- Edit (go to form with id) -->
-                <a class="btn btn-edit"
-                   th:href="@{/bookings/form/{eventId}/{id}(id=${b.id}, eventId=${b.eventId})}">
-                    Edit
-                </a>
-
-                <!-- Delete (POST) -->
-                <form th:action="@{/bookings/delete/{id}(id=${b.id})}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-delete"
-                            onclick="return confirm('Cancel/Delete this booking?');">
-                        Delete
-                    </button>
-                </form>
-
-            </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-<p class="muted" th:if="${bookingList == null or bookingList.isEmpty()}">No bookings available.</p>
-
+    <div class="card" style="padding:0; overflow:hidden;">
+        <table th:if="${bookingList != null and !bookingList.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Status</th>
+                <th>Event</th>
+                <th>Seats</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="b : ${bookingList}">
+                <td>
+                    <code style="font-size:.8125rem; background:#f1f5f9; padding:.15rem .4rem; border-radius:4px;"
+                          th:text="${b.id}">bk-1</code>
+                </td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${b.status != null and b.status.name() == 'Processed'} ? 'badge-blue'
+                                        : (${b.status != null and b.status.name() == 'Fulfilled'} ? 'badge-green'
+                                        : (${b.status != null and b.status.name() == 'Cancelled'} ? 'badge-red' : 'badge-yellow'))"
+                          th:text="${b.status}">PENDING</span>
+                </td>
+                <td>
+                    <div th:text="${b.eventTitle}" style="font-weight:600;">Event Title</div>
+                    <div th:text="${b.eventLocation}" style="font-size:.8rem; color:#64748b;">Location</div>
+                </td>
+                <td th:text="${b.seats != null and !b.seats.isEmpty() ? #strings.listJoin(b.seats, ', ') : '—'}">A1, A2</td>
+                <td>
+                    <div class="btn-group">
+                        <a class="btn btn-view" th:href="@{/bookings/details/view/{id}(id=${b.id})}">Details</a>
+                        <a class="btn btn-edit" th:href="@{/bookings/form/{eventId}/{id}(id=${b.id}, eventId=${b.eventId})}">Edit</a>
+                        <form th:action="@{/bookings/delete/{id}(id=${b.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Cancel this booking?');">Cancel</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="empty" th:if="${bookingList == null or bookingList.isEmpty()}">No bookings found.</p>
+    </div>
+</main>
 </body>
 </html>

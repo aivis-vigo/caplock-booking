@@ -72,7 +72,7 @@ public class TicketServiceImplementation implements TicketService {
                 newTicket.getSeatNumber(),
                 newTicket.getHolderName(),
                 newTicket.getHolderEmail(),
-                null,
+                newTicket.getBookingId(),
                 null,
                 "USD",
                 newTicket.getDiscountCode(),

@@ -9,6 +9,7 @@ import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +24,8 @@ public class BookingService implements IBookingService {
     private IEventService eventService;
     @Autowired
     private ISeatReservationService seatReservationService;
+    @Autowired
+    private IPaymentService paymentService;
 
     @Override
     public BookingFormDto getBookingFormById(String id, long userId) {
@@ -112,6 +115,15 @@ public class BookingService implements IBookingService {
         if (!val.getValue0()) return val;
         BookingDao dao = Mapper.splitOne(bookingFormDto, BookingDao.class,   Map.of("bookingId", "id"));
         boolean success = bookingRepo.setNewBooking(dao);
+
+        if (success) {
+            PaymentDTO pendingPayment = new PaymentDTO();
+            pendingPayment.setBookingId(bookingFormDto.getBookingId());
+            pendingPayment.setStatus("PENDING");
+            pendingPayment.setAmount(BigDecimal.ZERO);
+            paymentService.create(pendingPayment);
+        }
+
         return Pair.with(success, success ? "Success" : "Error");
     }
 
