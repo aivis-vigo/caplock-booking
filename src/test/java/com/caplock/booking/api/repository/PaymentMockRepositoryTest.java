@@ -1,7 +1,7 @@
 package com.caplock.booking.api.repository;
 
-import com.caplock.booking.entity.dao.PaymentDAO;
-import com.caplock.booking.repository.PaymentMockRepository;
+import com.caplock.booking.entity.old.dao.PaymentDAO;
+import com.caplock.booking.repository.old.jpa.PaymentMockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

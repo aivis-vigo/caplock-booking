@@ -1,12 +1,12 @@
 package com.caplock.booking.api.service;
 
-import com.caplock.booking.entity.dto.CreateTicketDTO;
-import com.caplock.booking.entity.dto.Response;
-import com.caplock.booking.entity.dto.TicketDTO;
-import com.caplock.booking.entity.object.Ticket;
-import com.caplock.booking.repository.jpa.TicketRepository;
-import com.caplock.booking.service.QrService;
-import com.caplock.booking.service.TicketServiceImplementation;
+import com.caplock.booking.entity.old.dto.CreateTicketDTO;
+import com.caplock.booking.entity.old.dto.Response;
+import com.caplock.booking.entity.old.dto.TicketDTO;
+import com.caplock.booking.entity.old.object.Ticket;
+import com.caplock.booking.repository.old.jpa.TicketRepository;
+import com.caplock.booking.service.old.QrService;
+import com.caplock.booking.service.old.TicketServiceImplementation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

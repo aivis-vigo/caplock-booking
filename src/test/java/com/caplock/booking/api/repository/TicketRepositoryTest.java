@@ -1,8 +1,8 @@
 package com.caplock.booking.api.repository;
 
-import com.caplock.booking.TicketType;
-import com.caplock.booking.entity.object.Ticket;
-import com.caplock.booking.repository.jpa.TicketRepository;
+import com.caplock.booking.entity.TicketType;
+import com.caplock.booking.entity.old.object.Ticket;
+import com.caplock.booking.repository.old.jpa.TicketRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

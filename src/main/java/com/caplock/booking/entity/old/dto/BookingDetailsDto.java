@@ -1,0 +1,17 @@
+package com.caplock.booking.entity.old.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+public class BookingDetailsDto {
+    private BookingDto bookingDto;
+    private EventDto eventDto;
+    private PaymentDTO paymentDto;
+
+}

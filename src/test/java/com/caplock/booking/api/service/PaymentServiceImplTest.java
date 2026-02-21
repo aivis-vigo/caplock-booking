@@ -1,10 +1,10 @@
 package com.caplock.booking.api.service;
 
-import com.caplock.booking.entity.dao.PaymentDAO;
-import com.caplock.booking.entity.dto.PaymentDTO;
-import com.caplock.booking.repository.IPaymentRepository;
-import com.caplock.booking.service.InvoiceServiceImpl;
-import com.caplock.booking.service.PaymentServiceImpl;
+import com.caplock.booking.entity.old.dao.PaymentDAO;
+import com.caplock.booking.entity.old.dto.PaymentDTO;
+import com.caplock.booking.repository.old.jpa.IPaymentRepository;
+import com.caplock.booking.service.old.InvoiceServiceImpl;
+import com.caplock.booking.service.old.PaymentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
