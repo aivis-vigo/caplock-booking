@@ -1,62 +1,45 @@
 package com.caplock.booking.controller;
 
-import com.caplock.booking.controller.helper.FormShower;
-import com.caplock.booking.entity.dto.BookingDto;
-import com.caplock.booking.entity.dto.BookingFormDto;
-import com.caplock.booking.entity.dto.EventDetailsDto;
 import com.caplock.booking.entity.dto.EventDto;
-import com.caplock.booking.service.IEventService;
-import com.caplock.booking.service.IWaitListEntryService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import com.caplock.booking.service.EventService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/events")
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/events")
+@RequiredArgsConstructor
 public class EventController {
-    private final IEventService eventService;
+    private final EventService eventService;
 
-    public EventController(IEventService eventService) {
-        this.eventService = eventService;
+    @PostMapping
+    public ResponseEntity<EventDto> create(@RequestBody EventDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(eventService.create(dto));
     }
 
-    @GetMapping("/")
-    public String getAllEvents(Model model) {
-        model.addAttribute("eventList", eventService.getAllEvents());
-        return "events/Events";
+    @GetMapping("/{id}")
+    public ResponseEntity<EventDto> getById(@PathVariable Long id) {
+        return eventService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // maybe will be bugged, two same paths
-    @GetMapping({"/form", "/form/{id}"})
-    public String form(Model model, @PathVariable(required = false) Long id) {
-        long safeId = (id == null) ? -1 : id;
-        return FormShower.showForm(
-                model,
-                safeId,
-                eventService::getDetails,
-                EventDetailsDto.class
-        );
+    @GetMapping
+    public List<EventDto> getAll() {
+        return eventService.getAll();
     }
 
-    @PostMapping("/submitForm")
-    public String setEvent(@ModelAttribute EventDetailsDto event) {
-        if (!eventService.setEvent(event)) ;//show error
-        return "redirect:/events/";
+    @PutMapping("/{id}")
+    public ResponseEntity<EventDto> update(@PathVariable Long id, @RequestBody EventDto dto) {
+        return ResponseEntity.ok(eventService.update(id, dto));
     }
 
-    @PutMapping("/update/{id}")
-    public String putEvent(@ModelAttribute EventDetailsDto event, @PathVariable long id) {
-        // get user id from jwt
-        if (   eventService.updateEvent(id, event))
-            return "redirect:/events/";
-        else {
-            //show error
-            return "redirect:/events/";
-        }
-    }
-    @PostMapping("/delete/{id}")
-    public String deleteBooking(@PathVariable long id) {
-        eventService.deleteEvent(id);
-        return "redirect:/events/";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        eventService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,12 +1,11 @@
 package com.caplock.booking.api.service;
 
-import com.caplock.booking.entity.dao.CategoryDAO;
-import com.caplock.booking.entity.dto.CategoryDTO;
-import com.caplock.booking.repository.ICategoryRepository;
-import com.caplock.booking.service.CategoryServiceImpl;
+import com.caplock.booking.entity.old.dao.CategoryDAO;
+import com.caplock.booking.entity.old.dto.CategoryDTO;
+import com.caplock.booking.repository.old.jpa.ICategoryRepository;
+import com.caplock.booking.service.old.CategoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.verification.VerificationMode;
 
 import java.util.Collections;
 import java.util.List;

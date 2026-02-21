@@ -1,70 +1,45 @@
 package com.caplock.booking.controller;
 
-import com.caplock.booking.entity.dto.UserCreationDTO;
-import com.caplock.booking.util.UserDTOMapper;
-import com.caplock.booking.service.UserService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import com.caplock.booking.entity.dto.UserDto;
+import com.caplock.booking.service.IUserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/user")
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
-    UserService userService;
+    private final IUserService userService;
 
-    public UserController() {
-        this.userService = new UserService(new UserDTOMapper());
-    }
-
-    @GetMapping("/")
-    public String index() {
-        return "users/index";
+    @PostMapping
+    public ResponseEntity<UserDto> create(@RequestBody UserDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(dto));
     }
 
     @GetMapping("/{id}")
-    public String details(@PathVariable Integer id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
-
-        // refers to resources/templates/users/index.html
-        return "users/details";
+    public ResponseEntity<UserDto> getById(@PathVariable Long id) {
+        return userService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/all")
-    public String allUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        // refers to resources/templates/users/list.html
-        return "users/list";
+    @GetMapping
+    public List<UserDto> getAll() {
+        return userService.getAll();
     }
 
-    @GetMapping("/create")
-    public String createForm(Model model) {
-        // refers to resources/templates/users/create.html
-        return "users/create";
-    }
-
-    // @ModelAttribute - binds form data into object model
-    @PostMapping("/submit-form")
-    public String createUser(@ModelAttribute UserCreationDTO user) {
-        userService.saveUser(user);
-        return "redirect:/user/all";
-    }
-
-    @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable Integer id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
-        return "users/edit";
-    }
-
-    // @ModelAttribute - binds form data into object model
-    @PutMapping("/update/{id}")
-    public String updateUser(@PathVariable Integer id, @ModelAttribute UserCreationDTO user) {
-        userService.updateUser(id, user);
-        return "redirect:/user/all";
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody UserDto dto) {
+        return ResponseEntity.ok(userService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable Integer id) {
-        userService.deleteUserById(id);
-        return "redirect:/user/all";
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
