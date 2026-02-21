@@ -2,13 +2,12 @@ package com.caplock.booking.service.impl;
 
 import com.caplock.booking.entity.dto.BookingDto;
 import com.caplock.booking.entity.dao.BookingEntity;
+import com.caplock.booking.entity.dto.EventDto;
 import com.caplock.booking.repository.BookingRepository;
-import com.caplock.booking.service.BookingService;
-import com.caplock.booking.service.InvoiceService;
-import com.caplock.booking.service.PaymentService;
-import com.caplock.booking.service.TicketService;
+import com.caplock.booking.service.*;
 import com.caplock.booking.util.Mapper;
 import lombok.RequiredArgsConstructor;
+import org.javatuples.Triplet;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,16 +17,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
+    private final EventService eventService;
     private final InvoiceService invoiceService;
     private final PaymentService paymentService;
     private final TicketService ticketService;
 
-
-
     @Override
-    public BookingDto create(BookingDto dto) {
+    public Triplet<Optional<BookingDto>, Boolean, String> create(BookingDto dto) {
+        if (bookingRepository.existsById(dto.getId()))
+            return Triplet.with(Optional.empty(), false, "Booking of event already exists");
+
+
+
         BookingEntity saved = bookingRepository.save(Mapper.toEntity(dto));
-        return Mapper.toDto(saved);
+        return Triplet.with(Optional.of(Mapper.toDto(saved)), true, "OK");
     }
 
     @Override

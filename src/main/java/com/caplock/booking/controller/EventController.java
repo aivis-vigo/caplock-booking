@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @RestController
@@ -16,13 +17,12 @@ import java.util.function.Supplier;
 public class EventController {
     private final EventService eventService;
 
-    @PostMapping
     public ResponseEntity<EventDto> create(@RequestBody EventDto dto) {
-        return eventService.create(dto).getValue0()
+        return Optional.ofNullable(eventService.create(dto))
                 .map(event -> ResponseEntity.status(HttpStatus.CREATED).body(event))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
-
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<EventDto> getById(@PathVariable Long id) {

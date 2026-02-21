@@ -18,6 +18,7 @@ public class EventTicketConfigServiceImpl implements EventTicketConfigService {
 
     @Override
     public EventTicketConfigDto create(EventTicketConfigDto dto) {
+        SeatReservationServiceImpl.populateSeatsForEvent(dto);
         EventTicketConfigEntity saved = eventTicketConfigRepository.save(Mapper.toEntity(dto));
         return Mapper.toDto(saved);
     }
@@ -25,6 +26,11 @@ public class EventTicketConfigServiceImpl implements EventTicketConfigService {
     @Override
     public Optional<EventTicketConfigDto> getById(Long id) {
         return eventTicketConfigRepository.findById(id).map(Mapper::toDto);
+    }
+
+    @Override
+    public Optional<EventTicketConfigDto> getByEventId(Long id) {
+        return eventTicketConfigRepository.findAll().stream().filter(e -> e.getEventId().equals(id)).findFirst().map(Mapper::toDto);
     }
 
     @Override

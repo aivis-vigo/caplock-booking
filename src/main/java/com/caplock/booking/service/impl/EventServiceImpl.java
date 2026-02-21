@@ -2,8 +2,9 @@ package com.caplock.booking.service.impl;
 
 import com.caplock.booking.entity.dto.EventDto;
 import com.caplock.booking.entity.dao.EventEntity;
+import com.caplock.booking.entity.dto.EventTicketConfigDto;
 import com.caplock.booking.repository.EventRepository;
-import com.caplock.booking.service.EventService;
+import com.caplock.booking.service.*;
 import com.caplock.booking.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.javatuples.Pair;
@@ -17,13 +18,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
+    private final EventTicketConfigService eventTicketConfigService;
 
     @Override
-    public Triplet<Optional<EventDto>, Boolean, String> create(EventDto dto) {
-        if (false) return Triplet.with(Optional.empty(), false, "Event not found");
-        if (false) return Triplet.with(Optional.empty(), false, "Booking of event already exists");
+    public EventDto create(EventDto dto) {
+
         EventEntity saved = eventRepository.save(Mapper.toEntity(dto));
-        return Triplet.with(Optional.of(Mapper.toDto(saved)), true, "All good");
+        return Mapper.toDto(saved);
     }
 
     @Override
@@ -46,5 +47,10 @@ public class EventServiceImpl implements EventService {
     @Override
     public void delete(Long id) {
         eventRepository.deleteById(id);
+    }
+
+    @Override
+    public EventTicketConfigDto getEventTicketConfigByEventId(Long id) {
+        return eventTicketConfigService.getByEventId(id).orElse(null);
     }
 }

@@ -1,4 +1,4 @@
-package com.caplock.booking.service.old;
+package com.caplock.booking.service.impl;
 
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;

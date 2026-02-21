@@ -17,7 +17,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<BookingDto> create(@RequestBody BookingDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(dto).getValue0().get()); // Optional check needed here
     }
 
     @GetMapping("/{id}")

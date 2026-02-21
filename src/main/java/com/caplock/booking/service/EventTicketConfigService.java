@@ -15,4 +15,6 @@ public interface EventTicketConfigService {
     EventTicketConfigDto update(Long id, EventTicketConfigDto dto);
 
     void delete(Long id);
+
+    public Optional<EventTicketConfigDto> getByEventId(Long id);
 }
