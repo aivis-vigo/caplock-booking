@@ -8,6 +8,7 @@ import com.caplock.booking.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,10 +18,13 @@ public class EventTicketConfigServiceImpl implements EventTicketConfigService {
     private final EventTicketConfigRepository eventTicketConfigRepository;
 
     @Override
-    public EventTicketConfigDto create(EventTicketConfigDto dto) {
-        SeatReservationServiceImpl.populateSeatsForEvent(dto);
-        EventTicketConfigEntity saved = eventTicketConfigRepository.save(Mapper.toEntity(dto));
-        return Mapper.toDto(saved);
+    public List<EventTicketConfigDto> create(List<EventTicketConfigDto> dtos) {
+        SeatReservationServiceImpl.populateSeatsForEvent(dtos);
+        List<EventTicketConfigDto> saved = new ArrayList<>();
+        for (EventTicketConfigDto dto : dtos) {
+            saved.add(Mapper.toDto(eventTicketConfigRepository.save(Mapper.toEntity(dto))));
+        }
+        return saved;
     }
 
     @Override
@@ -29,8 +33,10 @@ public class EventTicketConfigServiceImpl implements EventTicketConfigService {
     }
 
     @Override
-    public Optional<EventTicketConfigDto> getByEventId(Long id) {
-        return eventTicketConfigRepository.findAll().stream().filter(e -> e.getEventId().equals(id)).findFirst().map(Mapper::toDto);
+    public List<EventTicketConfigDto> getByEventId(Long eventId) {
+        return eventTicketConfigRepository.findAllByEventId(eventId).stream()
+                .map(Mapper::toDto)
+                .toList();
     }
 
     @Override

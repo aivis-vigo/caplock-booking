@@ -16,8 +16,8 @@ public class EventTicketConfigController {
     private final EventTicketConfigService eventTicketConfigService;
 
     @PostMapping
-    public ResponseEntity<EventTicketConfigDto> create(@RequestBody EventTicketConfigDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(eventTicketConfigService.create(dto));
+    public ResponseEntity<List<EventTicketConfigDto>> create(@RequestBody EventTicketConfigDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(eventTicketConfigService.create(List.of(dto)));
     }
 
     @GetMapping("/{id}")

@@ -52,4 +52,10 @@ public class EventTicketConfigEntity {
 
     @Version
     private Long version;
+    @Column(name = "numOfSections")
+    private long numOfSections;
+    @Column(name = "numOfRows")
+    private long numOfRows;
+    @Column(name = "numSeatsPerRow")
+    private long numSeatsPerRow;
 }

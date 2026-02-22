@@ -51,4 +51,7 @@ public class InvoiceEntity {
 
     @Column(name = "pdf_url")
     private String pdfUrl;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }

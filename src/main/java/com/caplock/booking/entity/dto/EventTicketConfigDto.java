@@ -18,9 +18,9 @@ public class EventTicketConfigDto {
     private Long eventId;
     private TicketType ticketType;
     private BigDecimal price;
-    long numOfSections;
-    long numOfRows;
-    long numSeatsPerRow;
+    private long numOfSections;
+    private long numOfRows;
+    private long numSeatsPerRow;
     private Long totalSeats;
     private Long availableSeats;
     private LocalDateTime saleStart;

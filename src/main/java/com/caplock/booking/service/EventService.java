@@ -1,8 +1,8 @@
 package com.caplock.booking.service;
 
+import com.caplock.booking.entity.dto.EventDetailsDto;
 import com.caplock.booking.entity.dto.EventDto;
 import com.caplock.booking.entity.dto.EventTicketConfigDto;
-import org.javatuples.Triplet;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,5 +18,7 @@ public interface EventService {
 
     void delete(Long id);
 
-    public EventTicketConfigDto getEventTicketConfigByEventId(Long id);
+    Optional<EventDetailsDto> getEventDetailsByEventId(Long id);
+
+    List<EventTicketConfigDto> getEventConfByEventId(Long eventId);
 }

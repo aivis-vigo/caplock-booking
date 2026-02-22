@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EventTicketConfigService {
-    EventTicketConfigDto create(EventTicketConfigDto dto);
+    List<EventTicketConfigDto> create(List<EventTicketConfigDto> dtos);
 
     Optional<EventTicketConfigDto> getById(Long id);
 
@@ -16,5 +16,5 @@ public interface EventTicketConfigService {
 
     void delete(Long id);
 
-    public Optional<EventTicketConfigDto> getByEventId(Long id);
+    public List<EventTicketConfigDto> getByEventId(Long id);
 }

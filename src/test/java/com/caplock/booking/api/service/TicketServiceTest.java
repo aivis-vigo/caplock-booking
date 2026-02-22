@@ -6,6 +6,7 @@ import com.caplock.booking.entity.dto.TicketDto;
 import com.caplock.booking.repository.TicketRepository;
 import com.caplock.booking.service.impl.TicketServiceImpl;
 import com.caplock.booking.service.impl.QrService;
+import com.google.zxing.WriterException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +73,7 @@ public class TicketServiceTest {
     }
 
     @Test
-    public void TicketService_create_returnsCreatedTicket() {
+    public void TicketService_create_returnsCreatedTicket() throws IOException, WriterException {
         CreateTicketDTO createTicketDTO = new CreateTicketDTO();
         createTicketDTO.setHolderName("John Doe");
         createTicketDTO.setHolderEmail("john@example.com");
