@@ -46,6 +46,9 @@ public class SeatReservationServiceImpl {
     }
 
 
+    /*
+     * private
+     */
     public Pair<Boolean, String> assignSeatsTemp(long eventId, List<String> seatNums, String bookingId) {
         var check = checker(eventId, seatNums);
         if (!check.getValue0()) return check;

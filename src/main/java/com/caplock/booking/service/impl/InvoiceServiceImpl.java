@@ -8,6 +8,7 @@ import com.caplock.booking.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,5 +43,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public void delete(Long id) {
         invoiceRepository.deleteById(id);
+    }
+
+    @Override
+    public InvoiceDto generateInvoice(Long bookingId, BigDecimal amount) {
+        return null;
     }
 }
