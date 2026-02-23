@@ -1,8 +1,11 @@
 package com.caplock.booking.controller.view;
 
+import com.caplock.booking.entity.dto.EventDetailsDto;
 import com.caplock.booking.entity.dto.EventDto;
 import com.caplock.booking.service.EventService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +41,18 @@ public class EventViewController {
         model.addAttribute("item", dto);
         model.addAttribute("formAction", "/ui/events/" + id);
         return "ui/events/form";
+    }
+
+    @GetMapping("/{id}")
+    public String getDetails(@PathVariable Long id, @ModelAttribute("event") EventDetailsDto dto, Model model) {
+        EventDetailsDto response = eventService.getEventDetailsByEventId(id)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found with id: " + id));
+
+        model.addAttribute("event", response.getEvent());
+        model.addAttribute("ticketConfig", response.getTicketConfig());
+        model.addAttribute("freeSeats", response.getFreeSeats());
+
+        return "/ui/events/details";
     }
 
     @PostMapping("/{id}")

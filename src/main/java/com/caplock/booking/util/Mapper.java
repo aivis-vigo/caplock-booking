@@ -98,30 +98,19 @@ public final class Mapper {
         dto.setUserId(entity.getUserId());
         dto.setTotalPrice(entity.getTotalPrice());
         dto.setDiscountCode(entity.getDiscountCode());
-        dto.setDiscountAmount(entity.getDiscountAmount());
         dto.setStatus(entity.getStatus());
-        dto.setCreatedAt(entity.getCreatedAt());
-        dto.setUpdatedAt(entity.getUpdatedAt());
-        dto.setCanceledAt(entity.getCanceledAt());
-        dto.setExpiresAt(entity.getExpiresAt());
         return dto;
     }
 
     public static BookingEntity toEntity(BookingDto dto) {
         if (dto == null) return null;
         BookingEntity entity = new BookingEntity();
-        entity.setId(dto.getId());
         entity.setConfirmationCode(dto.getConfirmationCode());
         entity.setEventId(dto.getEventId());
         entity.setUserId(dto.getUserId());
         entity.setTotalPrice(dto.getTotalPrice());
         entity.setDiscountCode(dto.getDiscountCode());
-        entity.setDiscountAmount(dto.getDiscountAmount());
         entity.setStatus(dto.getStatus());
-        entity.setCreatedAt(dto.getCreatedAt());
-        entity.setUpdatedAt(dto.getUpdatedAt());
-        entity.setCanceledAt(dto.getCanceledAt());
-        entity.setExpiresAt(dto.getExpiresAt());
         return entity;
     }
 

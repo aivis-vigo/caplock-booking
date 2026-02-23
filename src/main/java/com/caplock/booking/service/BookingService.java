@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookingService {
+    BookingDto createNewBooking(BookingDto newBooking);
+
     Triplet<Optional<BookingDto>, Boolean, String> create(BookingDto dto, List<BookingItemDto> items);
 
     Optional<BookingDto> getById(Long id);

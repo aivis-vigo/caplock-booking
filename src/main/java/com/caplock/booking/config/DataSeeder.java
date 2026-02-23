@@ -159,11 +159,9 @@ public class DataSeeder implements CommandLineRunner {
         booking.setUserId(user.getId());
         booking.setTotalPrice(new BigDecimal("120.00"));
         booking.setDiscountCode("WELCOME10");
-        booking.setDiscountAmount(new BigDecimal("0.00"));
         booking.setStatus(StatusBookingEnum.DONE);
         booking.setCreatedAt(now.minusDays(1));
         booking.setUpdatedAt(now.minusDays(1));
-        booking.setExpiresAt(now.plusHours(2));
 
         bookingRepository.save(booking);
 
