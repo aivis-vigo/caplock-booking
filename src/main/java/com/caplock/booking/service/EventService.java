@@ -21,4 +21,6 @@ public interface EventService {
     Optional<EventDetailsDto> getEventDetailsByEventId(Long id);
 
     List<EventTicketConfigDto> getEventConfByEventId(Long eventId);
+
+    EventTicketConfigDto updateEventConfig(Long eventId, EventTicketConfigDto dto);
 }

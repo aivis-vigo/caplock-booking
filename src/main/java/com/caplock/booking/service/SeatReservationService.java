@@ -17,7 +17,7 @@ public interface SeatReservationService {
     }
 
     @EventListener
-    void onPaymentSucceeded(PaymentSucceededEvent event);
+    void onPaymentSucceeded(PaymentSucceededEvent event) throws InterruptedException;
 
     /*
      * private

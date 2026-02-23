@@ -27,12 +27,14 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     private static final ConcurrentHashMap<Long, ConcurrentHashMap<String, SeatReserver>> eventsSeat = new ConcurrentHashMap<>();
     private static final char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private final EventService eventService;
+    Thread thread = new Thread();
 
     @EventListener
-    public void onPaymentSucceeded(PaymentSucceededEvent event) {
+    public void onPaymentSucceeded(PaymentSucceededEvent event) throws InterruptedException {
         // TODO: Load seats for the booking and finalize reservation.
         paymentSuccess = true;
         notification = true;
+        thread.join();
     }
 
     public static void populateSeatsForEvent(List<EventTicketConfigDto> configDtos) {
@@ -85,11 +87,16 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         } finally {
             lock.unlock();
         }
-        return Pair.with(true, "Temp reservation has been successfully assigned");
 
-        // Thread wait till event of payment is completed, if payment is successful, seats will be reserved, otherwise they will be released
-        // while (!notification)Thread.onSpinWait();
-        // if (payment successful) return assignSeats(eventId, seats, bookingId);
+        Thread thread = new Thread(() -> {
+            while (!notification) Thread.onSpinWait();
+            var result = paymentSuccess ? assignSeats(eventId, seats, bookingId) : Pair.with(false, "Payment failed, reservation cleared");
+            if (!paymentSuccess) clearReservationOfSeats(eventId, bookingId);
+            log.info("{} {}", result.getValue0(), result.getValue1());
+
+        });
+        thread.start();
+        return Pair.with(true, "Temp reservation has been successfully assigned");
 
     }
 
@@ -140,6 +147,8 @@ public class SeatReservationServiceImpl implements SeatReservationService {
 
     @Override
     public boolean clearReservationOfSeats(long eventId, long bookingId) {
+
+        // TODO: Implement logic to clear temporary reservations for the given bookingId and eventId.
         return false;
     }
 

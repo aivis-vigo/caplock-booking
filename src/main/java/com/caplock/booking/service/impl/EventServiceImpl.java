@@ -48,6 +48,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public EventTicketConfigDto updateEventConfig(Long eventId, EventTicketConfigDto dto) {
+        return eventTicketConfigService.update(dto.getId(), dto);
+    }
+
+    @Override
     public void delete(Long id) {
         eventRepository.deleteById(id);
     }

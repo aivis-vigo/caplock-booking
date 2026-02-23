@@ -58,6 +58,13 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.deleteById(id);
     }
 
+    @Override
+    public void refundPayment(Long paymentId) {
+        //TODO: Implement refund logic, e.g., call payment gateway API, update payment status, etc.
+        // For now, just a placeholder to indicate where refund logic would go.
+        return;
+    }
+
     private void publishIfPaid(PaymentEntity payment) {
         if (payment.getStatus() != StatusPaymentEnum.Paid || payment.getBookingId() == null) return;
         eventPublisher.publishEvent(new PaymentSucceededEvent(

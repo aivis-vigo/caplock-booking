@@ -3,9 +3,7 @@ package com.caplock.booking.service.impl;
 import com.caplock.booking.entity.StatusBookingEnum;
 import com.caplock.booking.entity.TicketType;
 import com.caplock.booking.entity.dto.*;
-import com.caplock.booking.event.PaymentSucceededEvent;
 import com.caplock.booking.service.*;
-import com.caplock.booking.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
@@ -112,6 +110,25 @@ public class FlowServiceImpl implements FlowService {
         bookingDto.setStatus(StatusBookingEnum.DONE);
         bookingService.update(bookingDto.getId(), bookingDto);
 
-        return Triplet.with(true, "Booking processed successfully", null); // TODO: return actual data instead of null
+        // TODO: Update event details (e.g., decrease available seats) and return updated event details in the response
+/*        var updatedEventConfig=eventDetails.getTicketConfig().stream().map();
+        eventDetails.setEvent();
+        eventDetails.setTicketConfig(updatedEventConfig);*/
+
+        return Triplet.with(true, "Booking processed successfully", null); // TODO: return actual data instead of null (TICKET, INVOICE, new event details, etc.)
     }
+
+    @Override
+    public Triplet<Boolean, String, Object> processBookingCancellationFlow(Long userId, Long bookingId) {
+    // TODO: Implement booking cancellation flow
+        // 1. Validate input data
+        // 2. Check if booking exists and belongs to the user
+        // 3. Update booking status to cancelled
+        // 4. Clear seat reservations
+        // 5. Process refund if payment was made
+        // 6. Return result
+        return null;
+    }
+
+
 }
