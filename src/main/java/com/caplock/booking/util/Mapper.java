@@ -17,6 +17,8 @@ import com.caplock.booking.entity.dto.PaymentDto;
 import com.caplock.booking.entity.dto.TicketDto;
 import com.caplock.booking.entity.dto.UserDto;
 
+import java.util.ArrayList;
+
 public final class Mapper {
     private Mapper() {
     }
@@ -133,6 +135,7 @@ public final class Mapper {
         dto.setQuantity(entity.getQuantity());
         dto.setPricePerSeat(entity.getPricePerSeat());
         dto.setSubtotal(entity.getSubtotal());
+        dto.setSelectedSeats(entity.getSelectedSeats() == null ? new ArrayList<>() : new ArrayList<>(entity.getSelectedSeats()));
         return dto;
     }
 
@@ -146,6 +149,7 @@ public final class Mapper {
         entity.setQuantity(dto.getQuantity());
         entity.setPricePerSeat(dto.getPricePerSeat());
         entity.setSubtotal(dto.getSubtotal());
+        entity.setSelectedSeats(dto.getSelectedSeats() == null ? new ArrayList<>() : new ArrayList<>(dto.getSelectedSeats()));
         return entity;
     }
 

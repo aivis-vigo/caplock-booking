@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
                     var eventDto = modelMapper.map(event, EventDto.class);
                     var eventTicketConfigDto = eventTicketConfigService.getByEventId(eventId);
                     var freeSeats = seatReservationServiceProvider.getObject().getFreeSeatsForEvent(eventId);
-                    return Optional.of(new EventDetailsDto(eventDto, eventTicketConfigDto, freeSeats, List.of()));
+                    return Optional.of(new EventDetailsDto(eventDto, eventTicketConfigDto, freeSeats));
                 });
     }
 

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<BookingDto> create(@RequestBody BookingDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(dto).getValue0().get()); // Optional check needed here
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(dto, new ArrayList<>()).getValue0().get()); // Optional check needed here
     }
 
     @PutMapping("/{id}")

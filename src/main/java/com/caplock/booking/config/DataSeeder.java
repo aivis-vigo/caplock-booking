@@ -24,15 +24,18 @@ import com.caplock.booking.repository.IUserRepository;
 import com.caplock.booking.repository.InvoiceRepository;
 import com.caplock.booking.repository.PaymentRepository;
 import com.caplock.booking.repository.TicketRepository;
+import com.caplock.booking.service.SeatReservationService;
 import com.caplock.booking.service.impl.SeatReservationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.javatuples.Pair;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,6 +52,7 @@ public class DataSeeder implements CommandLineRunner {
     private final InvoiceRepository invoiceRepository;
     private final TicketRepository ticketRepository;
     private final ModelMapper modelMapper;
+    private final SeatReservationService seatReservationService;
 
     @Override
     public void run(String... args) {
@@ -156,7 +160,7 @@ public class DataSeeder implements CommandLineRunner {
         booking.setTotalPrice(new BigDecimal("120.00"));
         booking.setDiscountCode("WELCOME10");
         booking.setDiscountAmount(new BigDecimal("0.00"));
-        booking.setStatus(StatusBookingEnum.Processed);
+        booking.setStatus(StatusBookingEnum.DONE);
         booking.setCreatedAt(now.minusDays(1));
         booking.setUpdatedAt(now.minusDays(1));
         booking.setExpiresAt(now.plusHours(2));
@@ -170,8 +174,18 @@ public class DataSeeder implements CommandLineRunner {
         item.setQuantity(2);
         item.setPricePerSeat(new BigDecimal("60.00"));
         item.setSubtotal(new BigDecimal("120.00"));
+        List<String> selectedSeats = new ArrayList<>(List.of("A0000", "A0001"));
+        item.setSelectedSeats(selectedSeats);
 
         bookingItemRepository.save(item);
+
+        seatReservationService.assignSeatsTemp(
+                event1.getId(),
+                List.of(
+                        Pair.with(selectedSeats.getFirst(), TicketType.VIP),
+                        Pair.with(selectedSeats.getLast(), TicketType.VIP)
+                ),
+                booking.getId());
 
         PaymentEntity payment = new PaymentEntity();
         payment.setBookingId(booking.getId());
@@ -207,8 +221,8 @@ public class DataSeeder implements CommandLineRunner {
         ticket1.setTicketType(TicketType.VIP);
         ticket1.setTicketCode(event1.getTitle());
         ticket1.setSection("A");
-        ticket1.setRow("1");
-        ticket1.setSeatNumber("1");
+        ticket1.setRow("00");
+        ticket1.setSeatNumber("00");
         ticket1.setHolderName(user.getName());
         ticket1.setHolderEmail(user.getEmailHash());
         ticket1.setDiscountCode("WELCOME10");
@@ -223,8 +237,8 @@ public class DataSeeder implements CommandLineRunner {
         ticket2.setTicketType(TicketType.VIP);
         ticket2.setTicketCode(event1.getTitle());
         ticket2.setSection("A");
-        ticket2.setRow("1");
-        ticket2.setSeatNumber("2");
+        ticket2.setRow("00");
+        ticket2.setSeatNumber("01");
         ticket2.setHolderName(user.getName());
         ticket2.setHolderEmail(user.getEmailHash());
         ticket2.setDiscountCode("WELCOME10");

@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.javatuples.Pair;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,4 +22,5 @@ public class BookingItemDto {
     private Integer quantity;
     private BigDecimal pricePerSeat;
     private BigDecimal subtotal;
+    private List<String> selectedSeats;
 }

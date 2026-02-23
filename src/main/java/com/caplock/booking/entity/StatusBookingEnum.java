@@ -1,8 +1,10 @@
 package com.caplock.booking.entity;
 
 public enum StatusBookingEnum {
-    WaitingPayment,
-    Cancelled,
-    Fulfilled,
-    Processed
+    PROCESSING,
+    WAITING_PAYMENT,
+    CANCELLED,
+    PAYMENT_FAILED,
+    FULFILLED,
+    DONE
 }

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -44,7 +45,9 @@ public class SeatReservationServiceImpl implements SeatReservationService {
             for (long i = 0; i < configDto.getNumOfSections(); i++) {
                 for (long j = 0; j < configDto.getNumOfRows(); j++) {
                     for (long k = 0; k < configDto.getNumSeatsPerRow(); k++) {
-                        String sb = alphabet[(int) i] + String.valueOf(j) + String.valueOf(k); // may be problem with cast to int, but for 40000 sections it should be ok
+                        String sb = alphabet[(int) i] +
+                                (String.valueOf(j).length() < 2 ? ("0" + String.valueOf(j)) : String.valueOf(j)) +
+                                (String.valueOf(k).length() < 2 ? ("0" + String.valueOf(k)) : String.valueOf(k)); // may be problem with cast to int, but for 40000 sections it should be ok
                         seatMap.put(sb, new SeatReserver(-1, -1, configDto.getTicketType()));
                     }
                 }
@@ -127,7 +130,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
                 invalid.append(seatId).append(" ");
                 continue;
             }
-            if (seat.bookingId() != -1 && seat.eventId() != -1)
+            if ((seat.bookingId() != -1 && seat.eventId() != -1) && seats.contains(Pair.with(seatId, seat.seatType())))
                 reserved.append(seatId).append(" ");
         }
         if (!invalid.isEmpty()) return Pair.with(false, "Invalid seat(s): " + invalid);

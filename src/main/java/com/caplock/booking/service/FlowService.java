@@ -5,13 +5,14 @@ import com.caplock.booking.entity.dto.BookingItemDto;
 import com.caplock.booking.entity.dto.EventDetailsDto;
 import com.caplock.booking.entity.dto.PaymentDto;
 import org.javatuples.Pair;
+import org.javatuples.Triplet;
 
 import java.util.List;
 
 public interface FlowService {
-    Pair<Boolean, String> processBookingFlow(Long userId,
-                                             EventDetailsDto eventDetails,
-                                             BookingDto bookingDto,
-                                             List<BookingItemDto> bookingItemDto,
-                                             PaymentDto paymentDto);
+    Triplet<Boolean, String, Object> processBookingFlow(Long userId,
+                                                        EventDetailsDto eventDetails,
+                                                        BookingDto bookingDto,
+                                                        List<BookingItemDto> bookingItemDto,
+                                                        PaymentDto paymentDto);
 }

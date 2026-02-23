@@ -16,5 +16,4 @@ public class EventDetailsDto {
     private EventDto event;
     private List<EventTicketConfigDto> ticketConfig;
     private List<Pair<String, TicketType>> freeSeats;
-    private List<Pair<String, TicketType>> selectedSeats;
 }

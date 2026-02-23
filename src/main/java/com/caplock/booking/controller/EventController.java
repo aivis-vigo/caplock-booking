@@ -29,9 +29,26 @@ public class EventController {
 
     @GetMapping("/{eventId}")
     public ResponseEntity<Response<EventDetailsDto>> getById(@PathVariable Long eventId) {
-        var b = bookingService.getById(1L).get();
+/*        var b = bookingService.getById(1L).get();
         b.setId(null);
-        var r = flowServiceImpl.processBookingFlow(1L, eventService.getEventDetailsByEventId(1L).get(), b, bookingItemService.getAllByBookingId(1L), new PaymentDto(1L, 1L, BigDecimal.valueOf(100L), StatusPaymentEnum.Paid, "S", "S", "S", null, null)); // Example flow processing, replace with actual parameters as needed
+        var bi= bookingItemService.getAllByBookingId(1L);
+        bi = bi.stream()
+                .map(x -> {x.setId(null); x.setSelectedSeats(List.of("B0001", "B0010")); return x;})
+                .toList();
+        var r = flowServiceImpl.processBookingFlow(2L,
+                eventService.getEventDetailsByEventId(1L).get(),
+                b,
+                bi,
+                new PaymentDto(1L,
+                                1L,
+                                BigDecimal.valueOf(100L),
+                                StatusPaymentEnum.Paid,
+                                "S",
+                                "S",
+                                "S",
+                                null,
+                                null)); // Example flow processing, replace with actual parameters as needed
+                                */
 
         return eventService.getEventDetailsByEventId(eventId)
                 .map(eventDetails -> ResponseEntity.ok(

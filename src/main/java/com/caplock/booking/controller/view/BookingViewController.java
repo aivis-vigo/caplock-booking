@@ -28,7 +28,7 @@ public class BookingViewController {
 
     @PostMapping
     public String create(@ModelAttribute("item") BookingDto dto) {
-        bookingService.create(dto);
+        bookingService.create(dto, null);
         return "redirect:/ui/bookings";
     }
 

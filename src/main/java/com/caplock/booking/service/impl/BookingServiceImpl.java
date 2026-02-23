@@ -19,15 +19,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
+    private final BookingItemService bookingItemService;
 
     @Transactional
     @Override
-    public Triplet<Optional<BookingDto>, Boolean, String> create(BookingDto dto) {
+    public Triplet<Optional<BookingDto>, Boolean, String> create(BookingDto dto, List<BookingItemDto> items) {
         if (dto.getId() != null && bookingRepository.existsById(dto.getId()))
             return Triplet.with(Optional.empty(), false, "Booking already exists");
+
         BookingEntity entity = Mapper.toEntity(dto);
         entity.setId(null);
         BookingEntity saved = bookingRepository.save(entity);
+
+        for (BookingItemDto item : items) {
+            item.setBookingId(saved.getId());
+            bookingItemService.create(item);
+        }
+
         return Triplet.with(Optional.of(Mapper.toDto(saved)), true, "OK");
     }
 
