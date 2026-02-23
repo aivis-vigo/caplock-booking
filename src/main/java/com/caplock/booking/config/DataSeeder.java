@@ -188,7 +188,7 @@ public class DataSeeder implements CommandLineRunner {
         PaymentEntity payment = new PaymentEntity();
         payment.setBookingId(booking.getId());
         payment.setAmount(new BigDecimal("120.00"));
-        payment.setStatus(StatusPaymentEnum.Paid);
+        payment.setStatus(StatusPaymentEnum.PAID);
         payment.setMethod("CARD");
         payment.setTransactionId("TXN-" + UUID.randomUUID().toString().substring(0, 8));
         payment.setProviderResponse("APPROVED");
