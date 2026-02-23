@@ -46,7 +46,7 @@ public class FlowController {
         // TODO: add discount count code field in the form
         String discountCode = "AV25B";
 
-        EventDto evenDetails = eventService.getEventDetailsByEventId(request.getEventId()).get().getEvent();
+        EventDto evenDetails = eventService.getEventDetailsByEventId(request.getEventId()).orElseThrow(()->new IllegalArgumentException("Object must be not null")).getEvent(); // not proper exception
 
         BookingDto newBooking = BookingDto.builder()
                 .eventId(evenDetails.getId())
@@ -60,15 +60,16 @@ public class FlowController {
         // temp. assign selected seats
         // TODO: split these into 2 files
         List<BookingRequestDTO.TicketSelectionDTO> tickets = request.getTickets();
-        log.info("Ticket seat config: {}, Seat number: {}", tickets.getFirst().getTicketConfigId().toString(), tickets.getFirst().getSeat().toString());
+        log.info("Ticket seat config: {}, Seat number: {}", tickets.getFirst().getTicketConfigId().toString(), tickets.getFirst().getSeat());
         for (var ticket : tickets) {
-            seatReservationServiceImpl.assignSeatsTemp(ticket, bookingDetails.getId());
+         var result=seatReservationServiceImpl.assignSeatsTemp(ticket, bookingDetails.getId());
+        if(!result.getValue0()) log.error("Failed to assign seat {} for ticket config id {}", ticket.getSeat(), ticket.getTicketConfigId());
         }
 
         // TODO: 5. handle payment
         // TODO on success -> status changes to CONFIRMED
         // TODO on fail -> status changes to FAILED or CANCELED
-//        paymentService.create();
+        paymentService.create(null);
 
         // TODO: 6. generate tickets
 //        ticketService.create()

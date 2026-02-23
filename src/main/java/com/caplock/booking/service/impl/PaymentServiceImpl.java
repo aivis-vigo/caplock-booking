@@ -66,10 +66,11 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private void publishIfPaid(PaymentEntity payment) {
-        if (payment.getStatus() != StatusPaymentEnum.Paid || payment.getBookingId() == null) return;
+        var success = payment.getStatus() == StatusPaymentEnum.Paid && payment.getBookingId() != null;
         eventPublisher.publishEvent(new PaymentSucceededEvent(
                 payment.getId(),
-                payment.getBookingId()
+                payment.getBookingId(),
+                success
         ));
     }
 }

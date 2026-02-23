@@ -15,11 +15,12 @@ import org.javatuples.Pair;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
@@ -27,20 +28,32 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 public class SeatReservationServiceImpl implements SeatReservationService {
     private volatile boolean paymentSuccess = false;
-    private volatile boolean notification = false;
     private static final ReentrantLock lock = new ReentrantLock();
     private static final ConcurrentHashMap<Long, ConcurrentHashMap<String, SeatReserver>> eventsSeat = new ConcurrentHashMap<>();
     private static final char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private final EventService eventService;
-    private final EventTicketConfigService  eventTicketConfigService;
-    Thread thread = new Thread();
+    private final EventTicketConfigService eventTicketConfigService;
+    private final AtomicReference<Thread> reservationThread = new AtomicReference<>();
+    private final CountDownLatch paymentLatch = new CountDownLatch(1);
 
     @EventListener
-    public void onPaymentSucceeded(PaymentSucceededEvent event) throws InterruptedException {
-        // TODO: Load seats for the booking and finalize reservation.
-        paymentSuccess = true;
-        notification = true;
-        thread.join();
+    public void onPaymentSucceeded(PaymentSucceededEvent event) {
+        // Set payment success flag and signal the waiting thread
+        paymentSuccess = event.Success();
+
+        // Create a new countdown latch for the next payment
+        // Note: CountDownLatch cannot be reset, so this is a limitation
+        // Consider using CyclicBarrier or other mechanisms for multiple payments
+
+        Thread currentThread = reservationThread.get();
+        if (currentThread != null && currentThread.isAlive()) {
+            try {
+                currentThread.join(100); // Wait briefly for thread to complete
+            } catch (InterruptedException e) {
+                log.warn("Interrupted while waiting for reservation thread to complete");
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     public static void populateSeatsForEvent(List<EventTicketConfigDto> configDtos) {
@@ -53,10 +66,10 @@ public class SeatReservationServiceImpl implements SeatReservationService {
             for (long i = 0; i < configDto.getNumOfSections(); i++) {
                 for (long j = 0; j < configDto.getNumOfRows(); j++) {
                     for (long k = 0; k < configDto.getNumSeatsPerRow(); k++) {
-                        int sectionIndex=(int)i;
-                        String sb = configDto.getTicketType().name().charAt(0)+ "" + alphabet[sectionIndex]
-                                +(String.valueOf(j).length() < 2 ? ("0" + String.valueOf(j)) : String.valueOf(j))
-                                +(String.valueOf(k).length() < 2 ? ("0" + String.valueOf(k)) : String.valueOf(k));// may be problem with cast to int, but for 40000 sections it should be ok
+                        int sectionIndex = (int) i;
+                        String sb = configDto.getTicketType().name().charAt(0) + "" + alphabet[sectionIndex]
+                                + (String.valueOf(j).length() < 2 ? ("0" + String.valueOf(j)) : String.valueOf(j))
+                                + (String.valueOf(k).length() < 2 ? ("0" + String.valueOf(k)) : String.valueOf(k));// may be problem with cast to int, but for 40000 sections it should be ok
                         seatMap.put(sb, new SeatReserver(-1, -1, configDto.getTicketType()));
                     }
                 }
@@ -78,9 +91,6 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     }
 
 
-    /*
-     * private
-     */
     public Pair<Boolean, String> assignSeatsTemp(long eventId, List<Pair<String, TicketType>> seats, long bookingId) {
         var check = checker(eventId, seats);
         if (!check.getValue0()) return check;
@@ -88,7 +98,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         try {
             lock.lock();
             for (var seat : seats)
-                Objects.requireNonNull(getSeatMapOrInit(eventId)).put(seat.getValue0(), new SeatReserver(eventId, bookingId, seat.getValue1()));
+                Objects.requireNonNull(getSeatMapOrInit(eventId)).replace(seat.getValue0(), new SeatReserver(eventId, bookingId, seat.getValue1()));
         } catch (Exception e) {
             log.error("Error during temporary seat assignment: {}", e.getMessage());
         } finally {
@@ -102,47 +112,43 @@ public class SeatReservationServiceImpl implements SeatReservationService {
 
     private @NonNull Pair<Boolean, String> waitPaymentOrReturn(long eventId, List<Pair<String, TicketType>> seats, long bookingId) {
         Thread thread = new Thread(() -> {
-            var timeToWait = 30000; // 30 seconds
-            var timeWaited = 0;
-            while (!notification)  Thread.onSpinWait();
-            var result = paymentSuccess ? assignSeats(eventId, seats, bookingId) : Pair.with(false, "Payment failed, reservation cleared");
-            if (!paymentSuccess) clearReservationOfSeats(eventId, bookingId);
-            log.info("{} {}", result.getValue0(), result.getValue1());
+            try {
+                // Wait for payment notification or timeout (60 seconds)
+                boolean paymentNotified = paymentLatch.await(60, TimeUnit.SECONDS);
 
+                if (!paymentNotified) {
+                    log.info("Payment timeout, clearing reservation for bookingId: {}", bookingId);
+                    clearReservationOfSeats(eventId, bookingId);
+                } else if (paymentSuccess) {
+                    // Payment succeeded, finalize seats
+                    var result = assignSeats(eventId, seats, bookingId);
+                    log.info("Payment finalized: {} - {}", result.getValue0(), result.getValue1());
+                } else {
+                    // Payment failed, clear reservation
+                    log.info("Payment failed, clearing reservation for bookingId: {}", bookingId);
+                    clearReservationOfSeats(eventId, bookingId);
+                }
+            } catch (InterruptedException e) {
+                log.error("Payment wait interrupted for bookingId: {}", bookingId);
+                clearReservationOfSeats(eventId, bookingId);
+                Thread.currentThread().interrupt();
+            }
         });
+
+        reservationThread.set(thread);
         thread.start();
         return Pair.with(true, "Temp reservation has been successfully assigned");
     }
 
 
     public Pair<Boolean, String> assignSeatsTemp(BookingRequestDTO.TicketSelectionDTO seatConf, long bookingId) {
-        var ticketConf=eventTicketConfigService.getById(seatConf.getTicketConfigId()).orElseThrow();
-        var seatType=ticketConf.getTicketType();
-        var eventId=ticketConf.getEventId();
-        var listOfSeats=List.of(Pair.with(
-                seatConf.getSeat(),
-                seatType));
-        var check = checker(eventId, listOfSeats);
-        if (!check.getValue0()) return check;
-
-        try {
-            lock.lock();
-
-                Objects.requireNonNull(getSeatMapOrInit(eventId))
-                        .put(seatConf.getSeat(), new SeatReserver(eventId, bookingId, seatType));
-        } catch (Exception e) {
-            log.error("Error during temporary seat assignment: {}", e.getMessage());
-        } finally {
-            lock.unlock();
-        }
-
-
-        return waitPaymentOrReturn(eventId, listOfSeats, bookingId);
-
+        var ticketConf = eventTicketConfigService.getById(seatConf.getTicketConfigId()).orElseThrow(); // not proper exception
+        var listOfSeats = List.of(Pair.with(seatConf.getSeat(), ticketConf.getTicketType()));
+        return assignSeatsTemp(ticketConf.getEventId(), listOfSeats, bookingId);
     }
 
 
-    public Pair<Boolean, String> assignSeats(long eventId, List<Pair<String, TicketType>> seats, long bookingId) {
+    private Pair<Boolean, String> assignSeats(long eventId, List<Pair<String, TicketType>> seats, long bookingId) {
         var check = checker(eventId, seats);
         if (!check.getValue0()) return check;
 
@@ -190,6 +196,12 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     public boolean clearReservationOfSeats(long eventId, long bookingId) {
 
         // TODO: Implement logic to clear temporary reservations for the given bookingId and eventId.
+        eventsSeat.get(eventId).replaceAll((key, seat) ->
+                seat.bookingId() == bookingId
+                        ? new SeatReserver(-1, -1, seat.seatType())
+                        : seat
+        );
+
         return false;
     }
 
