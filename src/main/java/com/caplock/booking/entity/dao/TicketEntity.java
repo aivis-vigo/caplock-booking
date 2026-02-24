@@ -48,13 +48,8 @@ public class TicketEntity {
     @Column(name = "ticket_code")
     private String ticketCode;
 
-    private String section;
-
-    @Column(name = "seat_row")
-    private String row;
-
-    @Column(name = "seat_number")
-    private String seatNumber;
+    @Column(name = "seat")
+    private String seat;
 
     @Column(name = "holder_name")
     private String holderName;

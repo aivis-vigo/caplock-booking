@@ -16,9 +16,7 @@ public class CreateTicketDTO {
 
     private String event;
 
-    private String section;
-    private String row;
-    private String seatNumber;
+    private String seat;
 
     private String holderName;
     private String holderEmail;

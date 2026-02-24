@@ -218,9 +218,7 @@ public class DataSeeder implements CommandLineRunner {
         ticket1.setEventId(event1.getId());
         ticket1.setTicketType(TicketType.VIP);
         ticket1.setTicketCode(event1.getTitle());
-        ticket1.setSection("A");
-        ticket1.setRow("00");
-        ticket1.setSeatNumber("00");
+        ticket1.setSeat("A");
         ticket1.setHolderName(user.getName());
         ticket1.setHolderEmail(user.getEmailHash());
         ticket1.setDiscountCode("WELCOME10");
@@ -234,9 +232,7 @@ public class DataSeeder implements CommandLineRunner {
         ticket2.setEventId(event1.getId());
         ticket2.setTicketType(TicketType.VIP);
         ticket2.setTicketCode(event1.getTitle());
-        ticket2.setSection("A");
-        ticket2.setRow("00");
-        ticket2.setSeatNumber("01");
+        ticket1.setSeat("A");
         ticket2.setHolderName(user.getName());
         ticket2.setHolderEmail(user.getEmailHash());
         ticket2.setDiscountCode("WELCOME10");

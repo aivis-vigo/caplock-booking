@@ -20,9 +20,7 @@ public class TicketDto {
     private Long eventId;
     private TicketType ticketType;
     private String ticketCode;
-    private String section;
-    private String row;
-    private String seatNumber;
+    private String seat;
     private String holderName;
     private String holderEmail;
     private String discountCode;

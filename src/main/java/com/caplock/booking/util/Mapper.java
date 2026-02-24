@@ -215,9 +215,7 @@ public final class Mapper {
         dto.setEventId(entity.getEventId());
         dto.setTicketType(entity.getTicketType());
         dto.setTicketCode(entity.getTicketCode());
-        dto.setSection(entity.getSection());
-        dto.setRow(entity.getRow());
-        dto.setSeatNumber(entity.getSeatNumber());
+        dto.setSeat("A");
         dto.setHolderName(entity.getHolderName());
         dto.setHolderEmail(entity.getHolderEmail());
         dto.setDiscountCode(entity.getDiscountCode());
@@ -237,9 +235,7 @@ public final class Mapper {
         entity.setEventId(dto.getEventId());
         entity.setTicketType(dto.getTicketType());
         entity.setTicketCode(dto.getTicketCode());
-        entity.setSection(dto.getSection());
-        entity.setRow(dto.getRow());
-        entity.setSeatNumber(dto.getSeatNumber());
+        entity.setSeat("A");
         entity.setHolderName(dto.getHolderName());
         entity.setHolderEmail(dto.getHolderEmail());
         entity.setDiscountCode(dto.getDiscountCode());

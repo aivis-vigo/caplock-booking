@@ -59,9 +59,7 @@ public class TicketServiceImpl implements TicketService {
         TicketEntity fullTicketInfo = new TicketEntity();
         fullTicketInfo.setTicketType(newTicket.getTicketType());
         fullTicketInfo.setTicketCode(newTicket.getEvent());
-        fullTicketInfo.setSection(newTicket.getSection());
-        fullTicketInfo.setRow(newTicket.getRow());
-        fullTicketInfo.setSeatNumber(newTicket.getSeatNumber());
+        fullTicketInfo.setSeat(newTicket.getSeat());
         fullTicketInfo.setHolderName(newTicket.getHolderName());
         fullTicketInfo.setHolderEmail(newTicket.getHolderEmail());
         fullTicketInfo.setDiscountCode(newTicket.getDiscountCode());

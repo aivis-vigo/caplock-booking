@@ -2,6 +2,7 @@ package com.caplock.booking.controller;
 
 import com.caplock.booking.entity.StatusBookingEnum;
 import com.caplock.booking.entity.StatusPaymentEnum;
+import com.caplock.booking.entity.TicketType;
 import com.caplock.booking.entity.dao.BookingEntity;
 import com.caplock.booking.entity.dto.*;
 import com.caplock.booking.service.*;
@@ -88,11 +89,23 @@ public class FlowController {
 
         //Thread.currentThread().wait(1000);
 
-        if(paymentDto.getStatus().equals(StatusPaymentEnum.PAID)) {
+        if (paymentDto.getStatus().equals(StatusPaymentEnum.PAID)) {
             //Thread.currentThread().wait(1000);
 
+            log.info("Seat: {}", tickets.getFirst().getSeat());
+
             // TODO: 6. generate tickets
-            // ticketService.create()
+            for (var ticket : tickets) {
+                CreateTicketDTO newTicket = new CreateTicketDTO(
+                        TicketType.VIP,
+                        evenDetails.getTitle(),
+                        ticket.getSeat(),
+                        "John",
+                        "john@example.com",
+                        discountCode
+                );
+                ticketService.create(newTicket);
+            }
 
             // TODO: 7. generate invoice
             var invoice = invoiceService.generateInvoiceFromForm(new InvoiceFormDto(
@@ -105,11 +118,11 @@ public class FlowController {
 
             bookingDetails.setStatus(StatusBookingEnum.DONE);
             bookingService.update(bookingDetails.getId(), bookingDetails);
-        }else {
+        } else {
             // Show error message to user and redirect to booking page
             log.error("Payment failed for booking id: {}, payment id: {}", bookingDetails.getId(), paymentDto.getId());
-             bookingDetails.setStatus(StatusBookingEnum.CANCELLED);
-             bookingService.update(bookingDetails.getId(), bookingDetails);
+            bookingDetails.setStatus(StatusBookingEnum.CANCELLED);
+            bookingService.update(bookingDetails.getId(), bookingDetails);
         }
         return "redirect:/ui/bookings";
     }
