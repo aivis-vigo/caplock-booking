@@ -3,7 +3,7 @@ package com.caplock.booking.controller;
 import com.caplock.booking.entity.StatusPaymentEnum;
 import com.caplock.booking.entity.dto.*;
 import com.caplock.booking.service.*;
-import com.caplock.booking.service.impl.FlowServiceImpl;
+//import com.caplock.booking.service.impl.FlowServiceImpl;
 import com.caplock.booking.service.impl.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
-    private final FlowServiceImpl flowServiceImpl;
+//    private final FlowServiceImpl flowServiceImpl;
     private final UserService userService;
     private final InvoiceService invoiceService;
     private final PaymentService paymentService;

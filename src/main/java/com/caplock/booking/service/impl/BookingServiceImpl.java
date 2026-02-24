@@ -35,9 +35,8 @@ public class BookingServiceImpl implements BookingService {
         BookingEntity booking = modelMapper.modelMapper().map(bookingDTO, BookingEntity.class);
 
         booking.setStatus(StatusBookingEnum.WAITING_PAYMENT);
+        booking.setDiscountCode(bookingDTO.getDiscountCode());
         booking.setConfirmationCode(UUID.randomUUID().toString());
-        booking.setCreatedAt(LocalDateTime.now());
-        booking.setUpdatedAt(LocalDateTime.now());
 
         BookingEntity savedBooking = bookingRepository.save(booking);
 

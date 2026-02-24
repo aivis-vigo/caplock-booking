@@ -55,8 +55,28 @@
                 </select>
             </div>
 
+            <label for="holderEmail">Holder Name:</label>
+            <input type="text" id="holderName" name="holderName" placeholder="John Doe"/>
+
+            <label for="holderEmail">Holder E-Mail:</label>
+            <input type="email" id="holderEmail" name="holderEmail" placeholder="test@example.com"/>
+
             <!-- Per-ticket rows injected here -->
             <div id="ticketRows"></div>
+
+            <label for="discountCode">Discount Code:</label>
+            <input type="text" id="discountCode" name="discountCode" placeholder="WNTR-15"/>
+
+            <div class="form-group">
+                <label for="paymentMethod">Payment Method:</label>
+                <select id="paymentMethod" name="paymentMethod">
+                    <option
+                            th:each="option : ${paymentMethodOptions}"
+                            th:value="${option.name()}"
+                            th:text="${option.getLabel()}">
+                    </option>
+                </select>
+            </div>
 
             <!-- Total Summary -->
             <div id="totalSummary" style="display:none">
