@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Form</title>
+</head>
+<body>
+<h1>Event</h1>
+<form th:action="@{${formAction}}" th:object="${item}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+    <div>
+        <label>Title</label>
+        <input type="text" th:field="*{title}"/>
+    </div>
+    <div>
+        <label>Description</label>
+        <input type="text" th:field="*{description}"/>
+    </div>
+    <div>
+        <label>Location</label>
+        <input type="text" th:field="*{location}"/>
+    </div>
+    <div>
+        <label>Start Time (ISO)</label>
+        <input type="text" th:field="*{startTime}" placeholder="2025-01-01T10:00:00"/>
+    </div>
+    <div>
+        <label>End Time (ISO)</label>
+        <input type="text" th:field="*{endTime}" placeholder="2025-01-01T12:00:00"/>
+    </div>
+    <div>
+        <label>Booking Open At (ISO)</label>
+        <input type="text" th:field="*{bookingOpenAt}" placeholder="2024-12-25T09:00:00"/>
+    </div>
+    <div>
+        <label>Booking Deadline (ISO)</label>
+        <input type="text" th:field="*{bookingDeadline}" placeholder="2024-12-31T23:59:59"/>
+    </div>
+    <div>
+        <label>Status</label>
+        <input type="text" th:field="*{status}"/>
+    </div>
+    <div>
+        <label>Category</label>
+        <input type="text" th:field="*{category}"/>
+    </div>
+    <button type="submit">Save</button>
+</form>
+<p><a th:href="@{/ui/events}">Back</a></p>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Form</title>
+</head>
+<body>
+<h1>Payment</h1>
+<form th:action="@{${formAction}}" th:object="${item}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+    <div>
+        <label>Booking Id</label>
+        <input type="text" th:field="*{bookingId}"/>
+    </div>
+    <div>
+        <label>Amount</label>
+        <input type="text" th:field="*{amount}"/>
+    </div>
+    <div>
+        <label>Status</label>
+        <input type="text" th:field="*{status}"/>
+    </div>
+    <div>
+        <label>Method</label>
+        <input type="text" th:field="*{method}"/>
+    </div>
+    <div>
+        <label>Transaction Id</label>
+        <input type="text" th:field="*{transactionId}"/>
+    </div>
+    <div>
+        <label>Provider Response</label>
+        <input type="text" th:field="*{providerResponse}"/>
+    </div>
+    <div>
+        <label>Paid At (ISO)</label>
+        <input type="text" th:field="*{paidAt}" placeholder="2025-01-01T10:00:00"/>
+    </div>
+    <button type="submit">Save</button>
+</form>
+<p><a th:href="@{/ui/payments}">Back</a></p>
+</body>
+</html>

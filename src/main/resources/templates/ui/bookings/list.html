@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookings</title>
+</head>
+<body>
+<h1>Bookings</h1>
+<p><a th:href="@{/ui/bookings/new}">Create Booking</a></p>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Event Id</th>
+        <th>User Id</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.id}">1</td>
+        <td th:text="${item.eventId}">1</td>
+        <td th:text="${item.userId}">1</td>
+        <td th:text="${item.status}">Processed</td>
+        <td>
+            <a th:href="@{/ui/bookings/{id}/edit(id=${item.id})}">Edit</a>
+            <form th:action="@{/ui/bookings/{id}/delete(id=${item.id})}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

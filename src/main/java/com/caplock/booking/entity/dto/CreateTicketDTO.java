@@ -1,6 +1,6 @@
 package com.caplock.booking.entity.dto;
 
-import com.caplock.booking.TicketType;
+import com.caplock.booking.entity.TicketType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,9 +16,7 @@ public class CreateTicketDTO {
 
     private String event;
 
-    private String section;
-    private String row;
-    private String seatNumber;
+    private String seat;
 
     private String holderName;
     private String holderEmail;

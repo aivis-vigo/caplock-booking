@@ -1,53 +1,34 @@
 package com.caplock.booking.service;
 
-import com.caplock.booking.repository.IBookingRepository;
+import com.caplock.booking.entity.TicketType;
+import com.caplock.booking.entity.dto.EventTicketConfigDto;
+import com.caplock.booking.event.PaymentSucceededEvent;
+import com.caplock.booking.service.impl.SeatReservationServiceImpl;
 import org.javatuples.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.context.event.EventListener;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
-@Service
-public class SeatReservationService implements ISeatReservationService {
-    IEventService eventService;
-    IBookingRepository bookingRepository;
+public interface SeatReservationService {
 
-    @Autowired
-    public SeatReservationService(IEventService eventService, IBookingRepository bookingRepository) {
-        this.bookingRepository = bookingRepository;
-        this.eventService = eventService;
+    static void populateSeatsForEvent(EventTicketConfigDto configDto) {
+
     }
 
-    @Override
-    public Pair<Boolean, String> assignSeats(String bookId, long eventId, List<String> seats) {
-        var eventDet = eventService.getDetails(eventId);
+    @EventListener
+    void onPaymentSucceeded(PaymentSucceededEvent event) throws InterruptedException;
 
-        if (eventDet == null) return Pair.with(false, "Event not found");
+    /*
+     * private
+     */
+    Pair<Boolean, String> assignSeatsTemp(long eventId, List<Pair<String, TicketType>> seats, long bookingId);
 
-        if (bookingRepository.checkBookingExists(bookId, eventId)) return Pair.with(false, "Booking already exists");
-
-        if (eventDet.getBookedSeats() + seats.size() > eventDet.getCapacity()) {
-            return Pair.with(false, "Booking full only " + (eventDet.getCapacity() - eventDet.getBookedSeats()) + "can be only added");
-        }
-
-        boolean bookedSeats = false;
-        for (String seat : seats) {
-            if (!eventService.assignSeat(eventId, bookId, seat)) {
-                bookedSeats = true;
-                break;
-            }
-        }
-        if (bookedSeats || seats.isEmpty())
-            return Pair.with(false, "Some seat is reserved");
+    boolean clearReservationOfSeats(long eventId, long bookingId);
 
 
-        return Pair.with(true, "Reservation has been successfully assigned");
-    }
+    List<Pair<String, TicketType>> getFreeSeatsForEvent(long eventId);
 
-    @Override
-    public boolean clearReservationOfSeats(String bookId, long eventId) {
-        boolean fail = !eventService.unassignSeat(eventId, bookId);
-
-        return !fail;
+    record SeatReserver(long eventId, long bookingId, TicketType seatType) {
     }
 }

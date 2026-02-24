@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Ticket Config Form</title>
+</head>
+<body>
+<h1>Event Ticket Config</h1>
+<form th:action="@{${formAction}}" th:object="${item}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+    <div>
+        <label>Event Id</label>
+        <input type="text" th:field="*{eventId}"/>
+    </div>
+    <div>
+        <label>Ticket Type</label>
+        <input type="text" th:field="*{ticketType}"/>
+    </div>
+    <div>
+        <label>Price</label>
+        <input type="text" th:field="*{price}"/>
+    </div>
+    <div>
+        <label>Total Seats</label>
+        <input type="text" th:field="*{totalSeats}"/>
+    </div>
+    <div>
+        <label>Available Seats</label>
+        <input type="text" th:field="*{availableSeats}"/>
+    </div>
+    <div>
+        <label>Sale Start (ISO)</label>
+        <input type="text" th:field="*{saleStart}" placeholder="2025-01-01T10:00:00"/>
+    </div>
+    <div>
+        <label>Sale End (ISO)</label>
+        <input type="text" th:field="*{saleEnd}" placeholder="2025-01-01T12:00:00"/>
+    </div>
+    <button type="submit">Save</button>
+</form>
+<p><a th:href="@{/ui/event-ticket-configs}">Back</a></p>
+</body>
+</html>

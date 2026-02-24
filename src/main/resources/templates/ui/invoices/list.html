@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoices</title>
+</head>
+<body>
+<h1>Invoices</h1>
+<p><a th:href="@{/ui/invoices/new}">Create Invoice</a></p>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Booking Id</th>
+        <th>Invoice Number</th>
+        <th>Total Amount</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.id}">1</td>
+        <td th:text="${item.bookingId}">1</td>
+        <td th:text="${item.invoiceNumber}">INV-0001</td>
+        <td th:text="${item.totalAmount}">0.00</td>
+        <td>
+            <a th:href="@{/ui/invoices/{id}/edit(id=${item.id})}">Edit</a>
+            <form th:action="@{/ui/invoices/{id}/delete(id=${item.id})}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

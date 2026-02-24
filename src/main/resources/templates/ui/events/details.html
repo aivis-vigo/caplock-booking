@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${event.title} + ' - Event Details'">Event Details</title>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Event Header -->
+    <div class="event-header">
+        <h1 th:text="${event.title}">Event Title</h1>
+        <span class="badge" th:text="${event.status}">Status</span>
+        <span class="category" th:text="${event.category}">Category</span>
+    </div>
+
+    <!-- Event Info -->
+    <section class="event-info">
+        <p th:text="${event.description}">Description</p>
+        <p><strong>Location:</strong> <span th:text="${event.location}">Location</span></p>
+        <p>
+            <strong>Start:</strong>
+            <span th:text="${#temporals.format(event.startTime, 'dd MMM yyyy, HH:mm')}">Start</span>
+            &nbsp;–&nbsp;
+            <strong>End:</strong>
+            <span th:text="${#temporals.format(event.endTime, 'dd MMM yyyy, HH:mm')}">End</span>
+        </p>
+        <p>
+            <strong>Booking opens:</strong>
+            <span th:text="${#temporals.format(event.bookingOpenAt, 'dd MMM yyyy, HH:mm')}">Open</span>
+            &nbsp;|&nbsp;
+            <strong>Deadline:</strong>
+            <span th:text="${#temporals.format(event.bookingDeadline, 'dd MMM yyyy, HH:mm')}">Deadline</span>
+        </p>
+    </section>
+
+    <!-- Booking Form -->
+    <section class="booking-section">
+        <h2>Book Tickets</h2>
+
+        <form th:action="@{/api/v1/handle-booking}" method="post">
+            <input type="hidden" name="eventId" th:value="${event.id}">
+
+            <!-- How many tickets -->
+            <div class="form-group">
+                <label for="quantity">Number of Tickets</label>
+                <select id="quantity" onchange="onQuantityChange()">
+                    <option value="">-- How many tickets? --</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+
+            <!-- Per-ticket rows injected here -->
+            <div id="ticketRows"></div>
+
+            <!-- Total Summary -->
+            <div id="totalSummary" style="display:none">
+                <hr>
+                <div id="totalLines"></div>
+                <strong>Total: $<span id="totalAmount">0.00</span></strong>
+            </div>
+
+            <button type="submit" id="bookBtn" disabled>Book Now</button>
+        </form>
+    </section>
+
+</div>
+
+<!-- Hidden ticket config data -->
+<select id="allTicketTypes" style="display:none">
+    <option th:each="ticket : ${ticketConfig}"
+            th:value="${ticket.id}"
+            th:data-type="${ticket.ticketType}"
+            th:data-available="${ticket.availableSeats}"
+            th:data-price="${ticket.price}"
+            th:text="${ticket.ticketType} + ' – $' + ${ticket.price} + ' (' + ${ticket.availableSeats} + ' available)'">
+    </option>
+</select>
+
+<!-- Hidden seat data -->
+<select id="allSeatsData" style="display:none">
+    <option th:each="freeSeat : ${freeSeats}"
+            th:value="${freeSeat.value0}"
+            th:data-type="${freeSeat.value1}"
+            th:text="${freeSeat.value0} + ' (' + ${freeSeat.value1} + ')'">
+    </option>
+</select>
+
+<script>
+    function getAllTicketTypes() {
+        return Array.from(document.querySelectorAll('#allTicketTypes option'));
+    }
+
+    function getAllSeats() {
+        return Array.from(document.querySelectorAll('#allSeatsData option'));
+    }
+
+    function getSelectedSeatValues() {
+        return Array.from(document.querySelectorAll('.seat-select'))
+            .map(s => s.value)
+            .filter(v => v !== '');
+    }
+
+    function buildTicketTypeDropdown(index) {
+        const select = document.createElement('select');
+        select.name = `tickets[${index}].ticketConfigId`;
+        select.id = `ticketType_${index}`;
+        select.className = 'ticket-type-select';
+        select.required = true;
+
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- Ticket type --';
+        select.appendChild(placeholder);
+
+        getAllTicketTypes().forEach(opt => {
+            const o = document.createElement('option');
+            o.value = opt.value;
+            o.setAttribute('data-type', opt.getAttribute('data-type'));
+            o.setAttribute('data-price', opt.getAttribute('data-price'));
+            o.textContent = opt.textContent;
+            select.appendChild(o);
+        });
+
+        select.addEventListener('change', () => {
+            populateSeatDropdown(index);
+            updateTotal();
+            validateBookBtn();
+        });
+
+        return select;
+    }
+
+    function buildSeatDropdown(index) {
+        const select = document.createElement('select');
+        select.name = `tickets[${index}].seat`;
+        select.id = `seat_${index}`;
+        select.className = 'seat-select';
+        select.disabled = true;
+        select.required = true;
+
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- Select seat --';
+        select.appendChild(placeholder);
+
+        select.addEventListener('change', () => {
+            refreshAllSeatDropdowns();
+            updateTotal();
+            validateBookBtn();
+        });
+
+        return select;
+    }
+
+    function populateSeatDropdown(rowIndex) {
+        const ticketSelect = document.getElementById(`ticketType_${rowIndex}`);
+        const seatSelect = document.getElementById(`seat_${rowIndex}`);
+        const selectedType = ticketSelect.options[ticketSelect.selectedIndex].getAttribute('data-type');
+
+        const currentValue = seatSelect.value;
+
+        seatSelect.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- Select seat --';
+        seatSelect.appendChild(placeholder);
+
+        if (!selectedType) {
+            seatSelect.disabled = true;
+            return;
+        }
+
+        const takenSeats = getSelectedSeatValues();
+
+        getAllSeats()
+            .filter(opt => opt.getAttribute('data-type') === selectedType)
+            .forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt.value;
+                o.textContent = opt.textContent;
+                if (takenSeats.includes(opt.value) && opt.value !== currentValue) {
+                    o.disabled = true;
+                }
+                seatSelect.appendChild(o);
+            });
+
+        if (currentValue) {
+            seatSelect.value = currentValue;
+        }
+
+        seatSelect.disabled = false;
+    }
+
+    function refreshAllSeatDropdowns() {
+        document.querySelectorAll('.ticket-row').forEach((row, index) => {
+            const ticketSelect = document.getElementById(`ticketType_${index}`);
+            if (ticketSelect.value) {
+                populateSeatDropdown(index);
+            }
+        });
+    }
+
+    function updateTotal() {
+        const rows = document.querySelectorAll('.ticket-row');
+        const totalLines = document.getElementById('totalLines');
+        const totalAmount = document.getElementById('totalAmount');
+        const totalSummary = document.getElementById('totalSummary');
+
+        totalLines.innerHTML = '';
+        let sum = 0;
+
+        rows.forEach((_, i) => {
+            const ticketSelect = document.getElementById(`ticketType_${i}`);
+            const seatSelect = document.getElementById(`seat_${i}`);
+            if (!ticketSelect?.value) return;
+
+            const selectedOpt = ticketSelect.options[ticketSelect.selectedIndex];
+            const price = parseFloat(selectedOpt.getAttribute('data-price')) || 0;
+            const type = selectedOpt.getAttribute('data-type');
+            const seat = seatSelect?.value || '–';
+
+            sum += price;
+
+            const line = document.createElement('p');
+            line.textContent = `Ticket ${i + 1}: ${type} — Seat ${seat} — $${price.toFixed(2)}`;
+            totalLines.appendChild(line);
+        });
+
+        totalAmount.textContent = sum.toFixed(2);
+        totalSummary.style.display = rows.length > 0 ? 'block' : 'none';
+    }
+
+    function onQuantityChange() {
+        const quantity = parseInt(document.getElementById('quantity').value) || 0;
+        const container = document.getElementById('ticketRows');
+        container.innerHTML = '';
+
+        for (let i = 0; i < quantity; i++) {
+            const row = document.createElement('div');
+            row.className = 'ticket-row';
+
+            const title = document.createElement('h4');
+            title.textContent = `Ticket ${i + 1}`;
+
+            const typeGroup = document.createElement('div');
+            typeGroup.className = 'form-group';
+            const typeLabel = document.createElement('label');
+            typeLabel.textContent = 'Ticket Type';
+            typeLabel.htmlFor = `ticketType_${i}`;
+            typeGroup.appendChild(typeLabel);
+            typeGroup.appendChild(buildTicketTypeDropdown(i));
+
+            const seatGroup = document.createElement('div');
+            seatGroup.className = 'form-group';
+            const seatLabel = document.createElement('label');
+            seatLabel.textContent = 'Seat';
+            seatLabel.htmlFor = `seat_${i}`;
+            seatGroup.appendChild(seatLabel);
+            seatGroup.appendChild(buildSeatDropdown(i));
+
+            row.appendChild(title);
+            row.appendChild(typeGroup);
+            row.appendChild(seatGroup);
+            container.appendChild(row);
+        }
+
+        updateTotal();
+        validateBookBtn();
+    }
+
+    function validateBookBtn() {
+        const rows = document.querySelectorAll('.ticket-row');
+        if (rows.length === 0) {
+            document.getElementById('bookBtn').disabled = true;
+            return;
+        }
+
+        const allComplete = Array.from(rows).every((_, i) => {
+            const type = document.getElementById(`ticketType_${i}`)?.value;
+            const seat = document.getElementById(`seat_${i}`)?.value;
+            return type && seat;
+        });
+
+        const seatValues = getSelectedSeatValues();
+        const noDuplicates = new Set(seatValues).size === seatValues.length;
+
+        document.getElementById('bookBtn').disabled = !(allComplete && noDuplicates);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Item Form</title>
+</head>
+<body>
+<h1>Booking Item</h1>
+<form th:action="@{${formAction}}" th:object="${item}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+    <div>
+        <label>Booking Id</label>
+        <input type="text" th:field="*{bookingId}"/>
+    </div>
+    <div>
+        <label>Event Ticket Config Id</label>
+        <input type="text" th:field="*{eventTicketConfigId}"/>
+    </div>
+    <div>
+        <label>Ticket Type</label>
+        <input type="text" th:field="*{ticketType}"/>
+    </div>
+    <div>
+        <label>Quantity</label>
+        <input type="text" th:field="*{quantity}"/>
+    </div>
+    <div>
+        <label>Price Per Seat</label>
+        <input type="text" th:field="*{pricePerSeat}"/>
+    </div>
+    <div>
+        <label>Subtotal</label>
+        <input type="text" th:field="*{subtotal}"/>
+    </div>
+    <button type="submit">Save</button>
+</form>
+<p><a th:href="@{/ui/booking-items}">Back</a></p>
+</body>
+</html>

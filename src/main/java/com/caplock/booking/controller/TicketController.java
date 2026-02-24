@@ -1,65 +1,46 @@
 package com.caplock.booking.controller;
 
 import com.caplock.booking.entity.dto.CreateTicketDTO;
-import com.caplock.booking.entity.dto.TicketDTO;
-import com.caplock.booking.entity.dto.Response;
-import com.caplock.booking.entity.object.Ticket;
+import com.caplock.booking.entity.dto.TicketDto;
 import com.caplock.booking.service.TicketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ui.Model;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/tickets")
+@RestController
+@RequestMapping("/api/tickets")
 @RequiredArgsConstructor
 public class TicketController {
-
     private final TicketService ticketService;
 
-    @GetMapping("/")
-    public String findAll(Model model) {
-        List<TicketDTO> tickets = ticketService.findAll().getData();
-
-        model.addAttribute("tickets", tickets);
-
-        return "users/tickets/list";
+    @PostMapping
+    public ResponseEntity<TicketDto> create(@RequestBody CreateTicketDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ticketService.create(dto));
     }
 
-    @ResponseBody
-    @GetMapping("/{holderName}")
-    public Response<?> findByHolderName(@PathVariable String holderName) {
-        return ticketService.findByHolderName(holderName);
+    @GetMapping("/{id}")
+    public ResponseEntity<TicketDto> getById(@PathVariable Long id) {
+        return ticketService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/create-form")
-    public String getCreateTicketForm() {
-        return "tickets/create-form";
+    @GetMapping
+    public List<TicketDto> getAll() {
+        return ticketService.findAll();
     }
 
-    @ResponseBody
-    @PostMapping("/create")
-    public Response<TicketDTO> createTicket(@RequestBody CreateTicketDTO newTicket) {
-        return ticketService.create(newTicket);
+    @PutMapping("/{id}")
+    public ResponseEntity<TicketDto> update(@PathVariable Long id, @RequestBody TicketDto dto) {
+        return ResponseEntity.ok(ticketService.update(id, dto));
     }
 
-    @GetMapping("/edit-form")
-    public String getEditTicketForm() {
-        return "tickets/edit-form";
-    }
-
-    @ResponseBody
-    @PutMapping("/edit/{id}")
-    public Response<?> editTicket(@PathVariable Long id, @RequestBody Ticket updatedTicket) {
-        return ticketService.update(id, updatedTicket);
-    }
-
-    @ResponseBody
     @DeleteMapping("/{id}")
-    public Response<?> deleteTicket(@PathVariable Long id) {
-        return ticketService.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        ticketService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
-
 }

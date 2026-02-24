@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice Form</title>
+</head>
+<body>
+<h1>Invoice</h1>
+<form th:action="@{${formAction}}" th:object="${item}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+    <div>
+        <label>Booking Id</label>
+        <input type="text" th:field="*{bookingId}"/>
+    </div>
+    <div>
+        <label>Payment Id</label>
+        <input type="text" th:field="*{paymentId}"/>
+    </div>
+    <div>
+        <label>Invoice Number</label>
+        <input type="text" th:field="*{invoiceNumber}"/>
+    </div>
+    <div>
+        <label>Holder Name</label>
+        <input type="text" th:field="*{holderName}"/>
+    </div>
+    <div>
+        <label>Holder Email</label>
+        <input type="text" th:field="*{holderEmail}"/>
+    </div>
+    <div>
+        <label>Subtotal</label>
+        <input type="text" th:field="*{subtotal}"/>
+    </div>
+    <div>
+        <label>Discount</label>
+        <input type="text" th:field="*{discount}"/>
+    </div>
+    <div>
+        <label>Total Amount</label>
+        <input type="text" th:field="*{totalAmount}"/>
+    </div>
+    <div>
+        <label>Issued At (ISO)</label>
+        <input type="text" th:field="*{issuedAt}" placeholder="2025-01-01T10:00:00"/>
+    </div>
+    <div>
+        <label>PDF URL</label>
+        <input type="text" th:field="*{pdfUrl}"/>
+    </div>
+    <button type="submit">Save</button>
+</form>
+<p><a th:href="@{/ui/invoices}">Back</a></p>
+</body>
+</html>

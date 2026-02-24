@@ -1,12 +1,12 @@
 package com.caplock.booking.api.service;
 
+import com.caplock.booking.entity.dao.TicketEntity;
 import com.caplock.booking.entity.dto.CreateTicketDTO;
-import com.caplock.booking.entity.dto.Response;
-import com.caplock.booking.entity.dto.TicketDTO;
-import com.caplock.booking.entity.object.Ticket;
-import com.caplock.booking.repository.jpa.TicketRepository;
-import com.caplock.booking.service.QrService;
-import com.caplock.booking.service.TicketServiceImplementation;
+import com.caplock.booking.entity.dto.TicketDto;
+import com.caplock.booking.repository.TicketRepository;
+import com.caplock.booking.service.impl.TicketServiceImpl;
+import com.caplock.booking.service.impl.QrService;
+import com.google.zxing.WriterException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,15 +14,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TicketServiceTest {
@@ -33,101 +31,106 @@ public class TicketServiceTest {
     @Mock
     private ModelMapper modelMapper;
 
-    @InjectMocks
-    private TicketServiceImplementation ticketService;
-
     @Mock
     private QrService qrService;
 
+    @InjectMocks
+    private TicketServiceImpl ticketService;
+
     @Test
     public void TicketService_findAll_returnsTickets() {
-        Ticket ticket = new Ticket();
-        TicketDTO ticketDTO = new TicketDTO();
+        TicketEntity ticket = new TicketEntity();
+        ticket.setId(1L);
 
         when(ticketRepository.findAll()).thenReturn(List.of(ticket));
-        when(modelMapper.map(ticket, TicketDTO.class)).thenReturn(ticketDTO);
 
-        Response<List<TicketDTO>> response = ticketService.findAll();
+        TicketDto ticketDto = new TicketDto();
+        ticketDto.setId(1L);
 
-        assertThat(response.getStatusCode()).isEqualTo(200);
-        assertThat(response.getData()).hasSize(1);
-        assertThat(response.getData()).contains(ticketDTO);
+        when(modelMapper.map(ticket, TicketDto.class)).thenReturn(ticketDto);
+
+        List<TicketDto> response = ticketService.findAll();
+
+        assertThat(response).hasSize(1);
+        assertThat(response.getFirst().getId()).isEqualTo(1L);
     }
 
     @Test
     public void TicketService_findByHolderName() {
-        Ticket ticket = new Ticket();
-        TicketDTO ticketDTO = new TicketDTO();
+        TicketEntity ticket = new TicketEntity();
+        ticket.setHolderName("John Doe");
+
+        TicketDto ticketDto = new TicketDto();
+        ticketDto.setHolderName("John Doe");
 
         when(ticketRepository.findByHolderName("John Doe")).thenReturn(List.of(ticket));
-        when(modelMapper.map(ticket, TicketDTO.class)).thenReturn(ticketDTO);
+        when(modelMapper.map(ticket, TicketDto.class)).thenReturn(ticketDto);
 
-        Response<List<TicketDTO>> response = ticketService.findByHolderName("John Doe");
+        List<TicketDto> response = ticketService.findByHolderName("John Doe");
 
-        assertThat(response.getStatusCode()).isEqualTo(200);
-        assertThat(response.getMessage()).isEqualTo("Success");
-        assertThat(response.getData()).hasSize(1);
-        assertThat(response.getData()).contains(ticketDTO);
+        assertThat(response).hasSize(1);
+        assertThat(response.getFirst().getHolderName()).isEqualTo("John Doe");
     }
 
     @Test
-    public void TicketService_create_returnsCreatedTicket() throws Exception {
+    public void TicketService_create_returnsCreatedTicket() throws IOException, WriterException {
         CreateTicketDTO createTicketDTO = new CreateTicketDTO();
         createTicketDTO.setHolderName("John Doe");
         createTicketDTO.setHolderEmail("john@example.com");
 
-        Ticket savedTicket = new Ticket();
+        TicketEntity savedTicket = new TicketEntity();
         savedTicket.setId(1L);
-        savedTicket.setTicketNumber("TKT-001");
+        savedTicket.setHolderName("John Doe");
+        savedTicket.setHolderEmail("john@example.com");
 
-        TicketDTO ticketDTO = new TicketDTO();
+        TicketDto mappedDto = new TicketDto();
+        mappedDto.setId(1L);
+        mappedDto.setHolderName("John Doe");
 
-        when(ticketRepository.save(any(Ticket.class))).thenReturn(savedTicket);
-        when(qrService.generateAndSave("TKT-001", "TKT-001")).thenReturn("/qr/TKT-001.png");
-        when(modelMapper.map(savedTicket, TicketDTO.class)).thenReturn(ticketDTO);
+        when(ticketRepository.save(any(TicketEntity.class))).thenReturn(savedTicket);
+        when(qrService.generateAndSave(any(String.class), any(String.class))).thenReturn("/tmp/qr.png");
+        when(modelMapper.map(savedTicket, TicketDto.class)).thenReturn(mappedDto);
 
-        Response<TicketDTO> response = ticketService.create(createTicketDTO);
+        TicketDto response = ticketService.create(createTicketDTO);
 
-        assertThat(response.getStatusCode()).isEqualTo(201);
-        assertThat(response.getMessage()).isEqualTo("Ticket created successfully");
-        assertThat(response.getData()).isEqualTo(ticketDTO);
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getHolderName()).isEqualTo("John Doe");
 
-        // verify save was called twice — once before QR, once after setting QR path
-        verify(ticketRepository, times(2)).save(any(Ticket.class));
-        verify(qrService).generateAndSave("TKT-001", "TKT-001");
+        verify(ticketRepository).save(any(TicketEntity.class));
     }
 
     @Test
     public void TicketService_update_returnsSuccess() {
-        Ticket existingTicket = new Ticket();
-        existingTicket.setId(1L);
+        TicketDto updatedTicket = new TicketDto();
+        updatedTicket.setHolderName("Jane Doe");
 
-        Ticket updatedTicket = new Ticket();
+        TicketEntity savedTicket = new TicketEntity();
+        savedTicket.setId(1L);
+        savedTicket.setHolderName("Jane Doe");
 
-        when(ticketRepository.findById(1L)).thenReturn(Optional.of(existingTicket));
-        when(ticketRepository.save(updatedTicket)).thenReturn(updatedTicket);
+        TicketEntity mappedEntity = new TicketEntity();
+        mappedEntity.setId(1L);
+        mappedEntity.setHolderName("Jane Doe");
 
-        Response<?> response = ticketService.update(1L, updatedTicket);
+        TicketDto mappedDto = new TicketDto();
+        mappedDto.setId(1L);
+        mappedDto.setHolderName("Jane Doe");
 
-        assertThat(response.getStatusCode()).isEqualTo(200);
-        assertThat(response.getMessage()).isEqualTo("Ticket updated successfully");
-        assertThat(response.getData()).isNull();
+        when(modelMapper.map(updatedTicket, TicketEntity.class)).thenReturn(mappedEntity);
+        when(ticketRepository.save(any(TicketEntity.class))).thenReturn(savedTicket);
+        when(modelMapper.map(savedTicket, TicketDto.class)).thenReturn(mappedDto);
 
-        assertThat(updatedTicket.getId()).isEqualTo(1L);
-        verify(ticketRepository).save(updatedTicket);
+        TicketDto response = ticketService.update(1L, updatedTicket);
+
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getHolderName()).isEqualTo("Jane Doe");
+        verify(ticketRepository).save(any(TicketEntity.class));
     }
 
     @Test
     public void TicketService_deleteById_returnsSuccess() {
-        when(ticketRepository.existsById(1L)).thenReturn(true);
-
-        Response<?> response = ticketService.deleteById(1L);
-
-        assertThat(response.getStatusCode()).isEqualTo(200);
-        assertThat(response.getMessage()).isEqualTo("Ticket deleted successfully");
-        assertThat(response.getData()).isNull();
+        ticketService.deleteById(1L);
 
         verify(ticketRepository).deleteById(1L);
     }
-
 }

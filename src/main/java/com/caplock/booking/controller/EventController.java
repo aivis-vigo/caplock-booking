@@ -1,62 +1,91 @@
 package com.caplock.booking.controller;
 
-import com.caplock.booking.controller.helper.FormShower;
-import com.caplock.booking.entity.dto.BookingDto;
-import com.caplock.booking.entity.dto.BookingFormDto;
-import com.caplock.booking.entity.dto.EventDetailsDto;
-import com.caplock.booking.entity.dto.EventDto;
-import com.caplock.booking.service.IEventService;
-import com.caplock.booking.service.IWaitListEntryService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import com.caplock.booking.entity.StatusPaymentEnum;
+import com.caplock.booking.entity.dto.*;
+import com.caplock.booking.service.*;
+import com.caplock.booking.service.impl.FlowServiceImpl;
+import com.caplock.booking.service.impl.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/events")
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/events")
+@RequiredArgsConstructor
 public class EventController {
-    private final IEventService eventService;
+    private final EventService eventService;
+    private final FlowServiceImpl flowServiceImpl;
+    private final UserService userService;
+    private final InvoiceService invoiceService;
+    private final PaymentService paymentService;
+    private final TicketService ticketService;
+    private final BookingItemService bookingItemService;
+    private final BookingService bookingService;
 
-    public EventController(IEventService eventService) {
-        this.eventService = eventService;
+    @GetMapping("/{eventId}")
+    public ResponseEntity<Response<EventDetailsDto>> getById(@PathVariable Long eventId) {
+/*        var b = bookingService.getById(1L).get();
+        b.setId(null);
+        var bi= bookingItemService.getAllByBookingId(1L);
+        bi = bi.stream()
+                .map(x -> {x.setId(null); x.setSelectedSeats(List.of("B0001", "B0010")); return x;})
+                .toList();
+        var r = flowServiceImpl.processBookingFlow(2L,
+                eventService.getEventDetailsByEventId(1L).get(),
+                b,
+                bi,
+                new PaymentDto(1L,
+                                1L,
+                                BigDecimal.valueOf(100L),
+                                StatusPaymentEnum.Paid,
+                                "S",
+                                "S",
+                                "S",
+                                null,
+                                null)); // Example flow processing, replace with actual parameters as needed
+                                */
+
+        return eventService.getEventDetailsByEventId(eventId)
+                .map(eventDetails -> ResponseEntity.ok(
+                        Response.<EventDetailsDto>builder()
+                                .statusCode(200)
+                                .message("OK")
+                                .data(eventDetails)
+                                .build()
+                ))
+                .orElseGet(() -> ResponseEntity.status(404).body(
+                        Response.<EventDetailsDto>builder()
+                                .statusCode(404)
+                                .message("Event not found")
+                                .build()
+                ));
     }
 
-    @GetMapping("/")
-    public String getAllEvents(Model model) {
-        model.addAttribute("eventList", eventService.getAllEvents());
-        return "events/Events";
+    @GetMapping
+    public List<EventDto> getAll() {
+        return eventService.getAll();
     }
 
-    // maybe will be bugged, two same paths
-    @GetMapping({"/form", "/form/{id}"})
-    public String form(Model model, @PathVariable(required = false) Long id) {
-        long safeId = (id == null) ? -1 : id;
-        return FormShower.showForm(
-                model,
-                safeId,
-                eventService::getDetails,
-                EventDetailsDto.class
-        );
+    @PostMapping
+    public ResponseEntity<EventDto> create(@RequestBody EventDto dto) {
+        return Optional.ofNullable(eventService.create(dto))
+                .map(event -> ResponseEntity.status(HttpStatus.CREATED).body(event))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
-    @PostMapping("/submitForm")
-    public String setEvent(@ModelAttribute EventDetailsDto event) {
-        if (!eventService.setEvent(event)) ;//show error
-        return "redirect:/events/";
+    @PutMapping("/{id}")
+    public ResponseEntity<EventDto> update(@PathVariable Long id, @RequestBody EventDto dto) {
+        return ResponseEntity.ok(eventService.update(id, dto));
     }
 
-    @PutMapping("/update/{id}")
-    public String putEvent(@ModelAttribute EventDetailsDto event, @PathVariable long id) {
-        // get user id from jwt
-        if (   eventService.updateEvent(id, event))
-            return "redirect:/events/";
-        else {
-            //show error
-            return "redirect:/events/";
-        }
-    }
-    @PostMapping("/delete/{id}")
-    public String deleteBooking(@PathVariable long id) {
-        eventService.deleteEvent(id);
-        return "redirect:/events/";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        eventService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

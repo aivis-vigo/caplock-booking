@@ -1,210 +1,274 @@
 package com.caplock.booking.util;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import com.caplock.booking.entity.dao.BookingEntity;
+import com.caplock.booking.entity.dao.BookingItemEntity;
+import com.caplock.booking.entity.dao.EventEntity;
+import com.caplock.booking.entity.dao.EventTicketConfigEntity;
+import com.caplock.booking.entity.dao.InvoiceEntity;
+import com.caplock.booking.entity.dao.PaymentEntity;
+import com.caplock.booking.entity.dao.TicketEntity;
+import com.caplock.booking.entity.dao.UserEntity;
+import com.caplock.booking.entity.dto.BookingDto;
+import com.caplock.booking.entity.dto.BookingItemDto;
+import com.caplock.booking.entity.dto.EventDto;
+import com.caplock.booking.entity.dto.EventTicketConfigDto;
+import com.caplock.booking.entity.dto.InvoiceDto;
+import com.caplock.booking.entity.dto.PaymentDto;
+import com.caplock.booking.entity.dto.TicketDto;
+import com.caplock.booking.entity.dto.UserDto;
 
-public class Mapper {
+import java.util.ArrayList;
 
-    /** many DAOs -> One Dto **/
-    public static <T> T combine(Class<T> targetClass, Object... sources) {
-        return combine(targetClass, Map.of(), sources);
+public final class Mapper {
+    private Mapper() {
     }
 
-    /** many DAOs -> One Dto with aliases **/
-    public static <T> T combine(Class<T> targetClass, Map<String, String> aliases, Object... sources) {
-        T target = newInstance(targetClass);
-        if (sources == null) return target;
-
-        for (Object src : sources) {
-            if (src != null) copyInto(src, target, aliases);
-        }
-        return target;
+    public static EventDto toDto(EventEntity entity) {
+        if (entity == null) return null;
+        EventDto dto = new EventDto();
+        dto.setId(entity.getId());
+        dto.setTitle(entity.getTitle());
+        dto.setDescription(entity.getDescription());
+        dto.setLocation(entity.getLocation());
+        dto.setStartTime(entity.getStartTime());
+        dto.setEndTime(entity.getEndTime());
+        dto.setBookingOpenAt(entity.getBookingOpenAt());
+        dto.setBookingDeadline(entity.getBookingDeadline());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setCreatedBy(entity.getCreatedBy());
+        dto.setStatus(entity.getStatus());
+        dto.setCategory(entity.getCategory());
+        return dto;
     }
 
-    /** One DTO -> many DAOs (or generally one source -> many targets). */
-    public static Map<Class<?>, Object> split(Object source, Class<?>... targetClasses) {
-        return split(source, Map.of(), targetClasses);
+    public static EventEntity toEntity(EventDto dto) {
+        if (dto == null) return null;
+        EventEntity entity = new EventEntity();
+        entity.setId(dto.getId());
+        entity.setTitle(dto.getTitle());
+        entity.setDescription(dto.getDescription());
+        entity.setLocation(dto.getLocation());
+        entity.setStartTime(dto.getStartTime());
+        entity.setEndTime(dto.getEndTime());
+        entity.setBookingOpenAt(dto.getBookingOpenAt());
+        entity.setBookingDeadline(dto.getBookingDeadline());
+        entity.setCreatedAt(dto.getCreatedAt());
+        entity.setCreatedBy(dto.getCreatedBy());
+        entity.setStatus(dto.getStatus());
+        entity.setCategory(dto.getCategory());
+        return entity;
     }
 
-    /** One DTO -> many DAOs with aliases. */
-    public static Map<Class<?>, Object> split(Object source, Map<String, String> aliases, Class<?>... targetClasses) {
-        Map<Class<?>, Object> result = new LinkedHashMap<>();
-        if (targetClasses == null) return result;
-
-        for (Class<?> cls : targetClasses) {
-            Object target = newInstanceRaw(cls);
-            if (source != null) copyInto(source, target, aliases);
-            result.put(cls, target);
-        }
-        return result;
+    public static EventTicketConfigDto toDto(EventTicketConfigEntity entity) {
+        if (entity == null) return null;
+        EventTicketConfigDto dto = new EventTicketConfigDto();
+        dto.setId(entity.getId());
+        dto.setEventId(entity.getEventId());
+        dto.setTicketType(entity.getTicketType());
+        dto.setPrice(entity.getPrice());
+        dto.setTotalSeats(entity.getTotalSeats());
+        dto.setAvailableSeats(entity.getAvailableSeats());
+        dto.setSaleStart(entity.getSaleStart());
+        dto.setSaleEnd(entity.getSaleEnd());
+        dto.setVersion(entity.getVersion());
+        return dto;
     }
 
-    public static <T> T splitOne(Object source, Class<T> targetClass) {
-        return splitOne(source, targetClass, Map.of());
+    public static EventTicketConfigEntity toEntity(EventTicketConfigDto dto) {
+        if (dto == null) return null;
+        EventTicketConfigEntity entity = new EventTicketConfigEntity();
+        entity.setId(dto.getId());
+        entity.setEventId(dto.getEventId());
+        entity.setTicketType(dto.getTicketType());
+        entity.setPrice(dto.getPrice());
+        entity.setTotalSeats(dto.getTotalSeats());
+        entity.setAvailableSeats(dto.getAvailableSeats());
+        entity.setSaleStart(dto.getSaleStart());
+        entity.setSaleEnd(dto.getSaleEnd());
+        entity.setVersion(dto.getVersion());
+        return entity;
     }
 
-    public static <T> T splitOne(Object source, Class<T> targetClass, Map<String, String> aliases) {
-        T target = newInstance(targetClass);
-        if (source != null) copyInto(source, target, aliases);
-        return target;
+    public static BookingDto toDto(BookingEntity entity) {
+        if (entity == null) return null;
+        BookingDto dto = new BookingDto();
+        dto.setId(entity.getId());
+        dto.setConfirmationCode(entity.getConfirmationCode());
+        dto.setEventId(entity.getEventId());
+        dto.setUserId(entity.getUserId());
+        dto.setTotalPrice(entity.getTotalPrice());
+        dto.setDiscountCode(entity.getDiscountCode());
+        dto.setStatus(entity.getStatus());
+        return dto;
     }
 
-    // ------------------ core copy ------------------
-
-    private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = Map.of(
-            boolean.class, Boolean.class,
-            byte.class, Byte.class,
-            short.class, Short.class,
-            int.class, Integer.class,
-            long.class, Long.class,
-            float.class, Float.class,
-            double.class, Double.class,
-            char.class, Character.class
-    );
-
-    private static Class<?> boxed(Class<?> type) {
-        return type.isPrimitive() ? PRIMITIVE_TO_WRAPPER.getOrDefault(type, type) : type;
+    public static BookingEntity toEntity(BookingDto dto) {
+        if (dto == null) return null;
+        BookingEntity entity = new BookingEntity();
+        entity.setConfirmationCode(dto.getConfirmationCode());
+        entity.setEventId(dto.getEventId());
+        entity.setUserId(dto.getUserId());
+        entity.setTotalPrice(dto.getTotalPrice());
+        entity.setDiscountCode(dto.getDiscountCode());
+        entity.setStatus(dto.getStatus());
+        return entity;
     }
 
-    public static <T> T copyInto(Object source, T target, Map<String, String> aliases) {
-        if (source == null || target == null) return target;
-
-        if (!isSafeToReflect(source.getClass())) return target;
-
-        Map<String, Field> targetFields = allFieldsByName(target.getClass());
-
-        for (Field sf : allFields(source.getClass())) {
-            if (Modifier.isStatic(sf.getModifiers())) continue;
-
-            if ("eventDto".equals(sf.getName())) {
-                try {
-                    sf.setAccessible(true);
-                    Object nested = sf.get(source);
-                    if (nested != null && isSafeToReflect(nested.getClass())) {
-                        copyInto(nested, target, aliases);
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Failed to read nested field: " + sf.getName(), e);
-                }
-                continue;
-            }
-
-            String targetName = (aliases == null || aliases.isEmpty())
-                    ? sf.getName()
-                    : aliases.getOrDefault(sf.getName(), sf.getName());
-
-            Field tf = targetFields.get(targetName);
-            if (tf == null) continue;
-            if (Modifier.isStatic(tf.getModifiers()) || Modifier.isFinal(tf.getModifiers())) continue;
-
-            try {
-                sf.setAccessible(true);
-                Object value = sf.get(source);
-
-                tf.setAccessible(true);
-
-                if (value == null) {
-                    if (!tf.getType().isPrimitive()) tf.set(target, null);
-                    continue;
-                }
-
-                Class<?> targetType = boxed(tf.getType());
-
-
-                if (targetType.isAssignableFrom(value.getClass())) {
-                    tf.set(target, value);
-                    continue;
-                }
-
-                if (value instanceof Number n && Number.class.isAssignableFrom(targetType)) {
-                    Object converted = convertNumber(n, targetType);
-                    if (converted != null) tf.set(target, converted);
-                    continue;
-                }
-
-                if (value instanceof Set<?> s && List.class.isAssignableFrom(targetType)) {
-                    tf.set(target, new ArrayList<>(s));
-                    continue;
-                }
-
-                if (value instanceof String str && tf.getType().isEnum()) {
-                    @SuppressWarnings("unchecked")
-                    Class<? extends Enum> enumType = (Class<? extends Enum>) tf.getType();
-                    try {
-                        Object enumVal = Enum.valueOf(enumType, str);
-                        tf.set(target, enumVal);
-                    } catch (IllegalArgumentException ignored) {
-                        // skip if not matching
-                    }
-                }
-
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to copy field: " + sf.getName(), e);
-            }
-        }
-        return target;
+    public static BookingItemDto toDto(BookingItemEntity entity) {
+        if (entity == null) return null;
+        BookingItemDto dto = new BookingItemDto();
+        dto.setId(entity.getId());
+        dto.setBookingId(entity.getBookingId());
+        dto.setEventTicketConfigId(entity.getEventTicketConfigId());
+        dto.setTicketType(entity.getTicketType());
+        dto.setQuantity(entity.getQuantity());
+        dto.setPricePerSeat(entity.getPricePerSeat());
+        dto.setSubtotal(entity.getSubtotal());
+        dto.setSelectedSeats(entity.getSelectedSeats() == null ? new ArrayList<>() : new ArrayList<>(entity.getSelectedSeats()));
+        return dto;
     }
 
-    private static Object convertNumber(Number n, Class<?> targetWrapperType) {
-        if (targetWrapperType == Long.class) return n.longValue();
-        if (targetWrapperType == Integer.class) return n.intValue();
-        if (targetWrapperType == Short.class) return n.shortValue();
-        if (targetWrapperType == Byte.class) return n.byteValue();
-        if (targetWrapperType == Double.class) return n.doubleValue();
-        if (targetWrapperType == Float.class) return n.floatValue();
-        return null;
+    public static BookingItemEntity toEntity(BookingItemDto dto) {
+        if (dto == null) return null;
+        BookingItemEntity entity = new BookingItemEntity();
+        entity.setId(dto.getId());
+        entity.setBookingId(dto.getBookingId());
+        entity.setEventTicketConfigId(dto.getEventTicketConfigId());
+        entity.setTicketType(dto.getTicketType());
+        entity.setQuantity(dto.getQuantity());
+        entity.setPricePerSeat(dto.getPricePerSeat());
+        entity.setSubtotal(dto.getSubtotal());
+        entity.setSelectedSeats(dto.getSelectedSeats() == null ? new ArrayList<>() : new ArrayList<>(dto.getSelectedSeats()));
+        return entity;
     }
 
-    private static List<Field> allFields(Class<?> type) {
-        List<Field> fields = new ArrayList<>();
-        for (Class<?> c = type; c != null && c != Object.class; c = c.getSuperclass()) {
-            fields.addAll(Arrays.asList(c.getDeclaredFields()));
-        }
-        return fields;
+    public static PaymentDto toDto(PaymentEntity entity) {
+        if (entity == null) return null;
+        PaymentDto dto = new PaymentDto();
+        dto.setId(entity.getId());
+        dto.setBookingId(entity.getBookingId());
+        dto.setAmount(entity.getAmount());
+        dto.setStatus(entity.getStatus());
+        dto.setMethod(entity.getMethod());
+        dto.setTransactionId(entity.getTransactionId());
+        dto.setProviderResponse(entity.getProviderResponse());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setPaidAt(entity.getPaidAt());
+        return dto;
     }
 
-    private static Map<String, Field> allFieldsByName(Class<?> type) {
-        Map<String, Field> map = new HashMap<>();
-        for (Field f : allFields(type)) {
-            map.putIfAbsent(f.getName(), f);
-        }
-        return map;
+    public static PaymentEntity toEntity(PaymentDto dto) {
+        if (dto == null) return null;
+        PaymentEntity entity = new PaymentEntity();
+        entity.setId(dto.getId());
+        entity.setBookingId(dto.getBookingId());
+        entity.setAmount(dto.getAmount());
+        entity.setStatus(dto.getStatus());
+        entity.setMethod(dto.getMethod());
+        entity.setTransactionId(dto.getTransactionId());
+        entity.setProviderResponse(dto.getProviderResponse());
+        entity.setCreatedAt(dto.getCreatedAt());
+        entity.setPaidAt(dto.getPaidAt());
+        return entity;
     }
 
-    private static <T> T newInstance(Class<T> clazz) {
-        try {
-            return clazz.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot instantiate " + clazz.getName(), e);
-        }
+    public static InvoiceDto toDto(InvoiceEntity entity) {
+        if (entity == null) return null;
+        InvoiceDto dto = new InvoiceDto();
+        dto.setId(entity.getId());
+        dto.setBookingId(entity.getBookingId());
+        dto.setPaymentId(entity.getPaymentId());
+        dto.setInvoiceNumber(entity.getInvoiceNumber());
+        dto.setHolderName(entity.getHolderName());
+        dto.setHolderEmail(entity.getHolderEmail());
+        dto.setSubtotal(entity.getSubtotal());
+        dto.setDiscount(entity.getDiscount());
+        dto.setTotalAmount(entity.getTotalAmount());
+        dto.setIssuedAt(entity.getIssuedAt());
+        dto.setPdfUrl(entity.getPdfUrl());
+        return dto;
     }
 
-    private static Object newInstanceRaw(Class<?> clazz) {
-        try {
-            return clazz.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot instantiate " + clazz.getName(), e);
-        }
+    public static InvoiceEntity toEntity(InvoiceDto dto) {
+        if (dto == null) return null;
+        InvoiceEntity entity = new InvoiceEntity();
+        entity.setId(dto.getId());
+        entity.setBookingId(dto.getBookingId());
+        entity.setPaymentId(dto.getPaymentId());
+        entity.setInvoiceNumber(dto.getInvoiceNumber());
+        entity.setHolderName(dto.getHolderName());
+        entity.setHolderEmail(dto.getHolderEmail());
+        entity.setSubtotal(dto.getSubtotal());
+        entity.setDiscount(dto.getDiscount());
+        entity.setTotalAmount(dto.getTotalAmount());
+        entity.setIssuedAt(dto.getIssuedAt());
+        entity.setPdfUrl(dto.getPdfUrl());
+        return entity;
     }
 
-    private static boolean isSafeToReflect(Class<?> c) {
-        String p = (c.getPackageName() == null) ? "" : c.getPackageName();
+    public static TicketDto toDto(TicketEntity entity) {
+        if (entity == null) return null;
+        TicketDto dto = new TicketDto();
+        dto.setId(entity.getId());
+        dto.setBookingId(entity.getBookingId());
+        dto.setBookingItemId(entity.getBookingItemId());
+        dto.setEventId(entity.getEventId());
+        dto.setTicketType(entity.getTicketType());
+        dto.setTicketCode(entity.getTicketCode());
+        dto.setSeat("A");
+        dto.setHolderName(entity.getHolderName());
+        dto.setHolderEmail(entity.getHolderEmail());
+        dto.setDiscountCode(entity.getDiscountCode());
+        dto.setStatus(entity.getStatus());
+        dto.setIssuedAt(entity.getIssuedAt());
+        dto.setScannedAt(entity.getScannedAt());
+        dto.setQrCodeUrl(entity.getQrCodeUrl());
+        return dto;
+    }
 
+    public static TicketEntity toEntity(TicketDto dto) {
+        if (dto == null) return null;
+        TicketEntity entity = new TicketEntity();
+        entity.setId(dto.getId());
+        entity.setBookingId(dto.getBookingId());
+        entity.setBookingItemId(dto.getBookingItemId());
+        entity.setEventId(dto.getEventId());
+        entity.setTicketType(dto.getTicketType());
+        entity.setTicketCode(dto.getTicketCode());
+        entity.setSeat("A");
+        entity.setHolderName(dto.getHolderName());
+        entity.setHolderEmail(dto.getHolderEmail());
+        entity.setDiscountCode(dto.getDiscountCode());
+        entity.setStatus(dto.getStatus());
+        entity.setIssuedAt(dto.getIssuedAt());
+        entity.setScannedAt(dto.getScannedAt());
+        entity.setQrCodeUrl(dto.getQrCodeUrl());
+        return entity;
+    }
 
-        if (p.startsWith("java.") || p.startsWith("javax.") || p.startsWith("jakarta.")
-                || p.startsWith("sun.") || p.startsWith("com.sun.")
-                || p.startsWith("org.springframework.")) {
-            return false;
-        }
+    public static UserDto toDto(UserEntity entity) {
+        if (entity == null) return null;
+        UserDto dto = new UserDto();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setEmailHash(entity.getEmailHash());
+        dto.setPasswordHash(entity.getPasswordHash());
+        dto.setRole(entity.getRole());
+        dto.setNotificationToken(entity.getNotificationToken());
+        dto.setCreatedAt(entity.getCreatedAt());
+        return dto;
+    }
 
-
-        if (c.isPrimitive() || c.isEnum() || c == String.class
-                || Number.class.isAssignableFrom(c)
-                || c == Boolean.class || c == Character.class) {
-            return false;
-        }
-
-        return true;
+    public static UserEntity toEntity(UserDto dto) {
+        if (dto == null) return null;
+        UserEntity entity = new UserEntity();
+        entity.setId(dto.getId());
+        entity.setName(dto.getName());
+        entity.setEmailHash(dto.getEmailHash());
+        entity.setPasswordHash(dto.getPasswordHash());
+        entity.setRole(dto.getRole());
+        entity.setNotificationToken(dto.getNotificationToken());
+        entity.setCreatedAt(dto.getCreatedAt());
+        return entity;
     }
 }

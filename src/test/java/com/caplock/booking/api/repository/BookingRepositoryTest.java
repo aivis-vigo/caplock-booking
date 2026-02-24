@@ -1,8 +1,8 @@
 package com.caplock.booking.api.repository;
 
 import com.caplock.booking.entity.StatusBookingEnum;
-import com.caplock.booking.entity.dao.BookingDao;
-import com.caplock.booking.repository.BookingRepo;
+import com.caplock.booking.entity.old.dao.BookingDao;
+import com.caplock.booking.repository.old.jpa.BookingRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

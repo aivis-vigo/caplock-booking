@@ -1,120 +1,26 @@
 package com.caplock.booking.service;
 
-import com.caplock.booking.entity.StatusEventEnum;
-import com.caplock.booking.entity.dao.EventDao;
 import com.caplock.booking.entity.dto.EventDetailsDto;
 import com.caplock.booking.entity.dto.EventDto;
-import com.caplock.booking.repository.IEventRepository;
-import com.caplock.booking.util.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.caplock.booking.entity.dto.EventTicketConfigDto;
 
-import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-@Service
-public class EventService implements IEventService {
+public interface EventService {
+    EventDto create(EventDto dto);
 
-    @Autowired
-    private IEventRepository eventRepo;
+    Optional<EventDto> getById(Long id);
 
-//    @Autowired
-//    private ICategoryService categoryService;
+    List<EventDto> getAll();
 
-    @Override
-    public EventDetailsDto getDetails(long id) {
-        var dao = eventRepo.getEventById(id);
-        var dto = Mapper.combine(EventDetailsDto.class, dao/**,categoryService.getCategoryByName(name)*/);
-        dto.setEventDto(Mapper.combine(EventDto.class, dao));
-        return dto;
-    }
+    EventDto update(Long id, EventDto dto);
 
-    @Override
-    public Collection<EventDto> getAllEvents() {
-        return eventRepo.getAllEvents().stream()
-                .map(dao -> Mapper.combine(EventDto.class, dao/**,categoryService.getCategoryByName(name)*/))
-                .toList();
-    }
+    void delete(Long id);
 
-    @Override
-    public EventDto getEventById(long id) {
-        var dao = eventRepo.getEventById(id);
-        return Mapper.combine(EventDto.class, dao/**,categoryService.getCategoryByName(name)*/);
-    }
+    Optional<EventDetailsDto> getEventDetailsByEventId(Long id);
 
-    @Override
-    public boolean setEvent(EventDetailsDto dto) {
-        var a = eventRepo.setEvent(Mapper.combine(EventDao.class, dto));
-        return a;
-    }
+    List<EventTicketConfigDto> getEventConfByEventId(Long eventId);
 
-    @Override
-    public boolean updateEvent(long id, EventDetailsDto dto) {
-        dto.getEventDto().setId(id);
-        var a = Mapper.splitOne(dto, EventDao.class, Map.of());
-
-        return eventRepo.updateEvent(id, a);
-    }
-
-    @Override
-    public boolean deleteEvent(long id) {
-        return eventRepo.deleteEvent(id);
-    }
-
-
-    @Override
-    public Collection<EventDto> getEventsByStatus(StatusEventEnum status) {
-        return eventRepo.getEventsByStatus(status).stream()
-                .map(dao -> Mapper.combine(EventDto.class, dao/**,categoryService.getCategoryByName(name)*/))
-                .toList();
-    }
-
-    @Override
-    public EventDto getEventByTitle(String title) {
-        return null;
-    }
-
-    @Override
-    public Collection<EventDto> getEventByCategory(String cat) {
-        return List.of();
-    }
-
-    @Override
-    public Collection<EventDto> getEventsByDate(LocalDate date) {
-        return List.of();
-    }
-
-    @Override
-    public Collection<EventDto> getEventsByLocation(String location) {
-        return List.of();
-    }
-
-    @Override
-    public boolean deleteByTitle(String title) {
-        return false;
-    }
-
-    @Override
-    public boolean unassignSeat(long eventId, String bookId) {
-        return eventRepo.unAssignSeat(eventId, getEventById(eventId).getTitle(), bookId);
-    }
-
-    @Override
-    public boolean assignSeat(long eventId, String bookingId, String seat) {
-
-        return eventRepo.assignSeat(eventId, getEventById(eventId).getTitle(), bookingId, seat);
-    }
-
-    @Override
-    public List<String> getSeatsFreeForEvent(long eventId) {
-        return eventRepo.getSeatsForEvent(eventId);
-    }
-
-    @Override
-    public List<String> getBookingSeatsForEvent(long eventId, String bookId) {
-        return eventRepo.getBookingSeatsForEvent(eventId, bookId);
-    }
-
+    EventTicketConfigDto updateEventConfig(Long eventId, EventTicketConfigDto dto);
 }

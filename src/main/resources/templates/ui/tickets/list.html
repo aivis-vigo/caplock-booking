@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tickets</title>
+</head>
+<body>
+<h1>Tickets</h1>
+<p><a th:href="@{/ui/tickets/new}">Create Ticket</a></p>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Event Id</th>
+        <th>Ticket Type</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.id}">1</td>
+        <td th:text="${item.eventId}">1</td>
+        <td th:text="${item.ticketType}">STANDARD</td>
+        <td th:text="${item.status}">Issued</td>
+        <td>
+            <a th:href="@{/ui/tickets/{id}/edit(id=${item.id})}">Edit</a>
+            <form th:action="@{/ui/tickets/{id}/delete(id=${item.id})}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

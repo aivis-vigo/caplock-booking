@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Form</title>
+</head>
+<body>
+<h1>Ticket</h1>
+<form th:action="@{${formAction}}" th:object="${item}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+    <div>
+        <label>Booking Id</label>
+        <input type="text" th:field="*{bookingId}"/>
+    </div>
+    <div>
+        <label>Booking Item Id</label>
+        <input type="text" th:field="*{bookingItemId}"/>
+    </div>
+    <div>
+        <label>Event Id</label>
+        <input type="text" th:field="*{eventId}"/>
+    </div>
+    <div>
+        <label>Ticket Type</label>
+        <input type="text" th:field="*{ticketType}"/>
+    </div>
+    <div>
+        <label>Ticket Code</label>
+        <input type="text" th:field="*{ticketCode}"/>
+    </div>
+    <div>
+        <label>Section</label>
+        <input type="text" th:field="*{section}"/>
+    </div>
+    <div>
+        <label>Row</label>
+        <input type="text" th:field="*{row}"/>
+    </div>
+    <div>
+        <label>Seat Number</label>
+        <input type="text" th:field="*{seatNumber}"/>
+    </div>
+    <div>
+        <label>Holder Name</label>
+        <input type="text" th:field="*{holderName}"/>
+    </div>
+    <div>
+        <label>Holder Email</label>
+        <input type="text" th:field="*{holderEmail}"/>
+    </div>
+    <div>
+        <label>Discount Code</label>
+        <input type="text" th:field="*{discountCode}"/>
+    </div>
+    <div>
+        <label>Status</label>
+        <input type="text" th:field="*{status}"/>
+    </div>
+    <div>
+        <label>Issued At (ISO)</label>
+        <input type="text" th:field="*{issuedAt}" placeholder="2025-01-01T10:00:00"/>
+    </div>
+    <div>
+        <label>Scanned At (ISO)</label>
+        <input type="text" th:field="*{scannedAt}" placeholder="2025-01-01T10:30:00"/>
+    </div>
+    <div>
+        <label>QR Code URL</label>
+        <input type="text" th:field="*{qrCodeUrl}"/>
+    </div>
+    <button type="submit">Save</button>
+</form>
+<p><a th:href="@{/ui/tickets}">Back</a></p>
+</body>
+</html>

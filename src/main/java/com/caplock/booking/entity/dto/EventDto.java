@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -14,16 +13,16 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 public class EventDto {
-    private long id;
+    private Long id;
     private String title;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime eventDate;
+    private String description;
     private String location;
-    private long duration; // in minutes
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime startTime;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endTime;
+    private LocalDateTime bookingOpenAt;
+    private LocalDateTime bookingDeadline;
+    private LocalDateTime createdAt;
+    private Long createdBy;
     private StatusEventEnum status;
     private String category;
 }

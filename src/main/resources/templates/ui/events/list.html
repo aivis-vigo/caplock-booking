@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Events</title>
+</head>
+<body>
+<h1>Events</h1>
+<p><a th:href="@{/ui/events/new}">Create Event</a></p>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Start Time</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.id}">1</td>
+        <td th:text="${item.title}">Title</td>
+        <td th:text="${item.startTime}">2025-01-01T10:00:00</td>
+        <td th:text="${item.status}">New</td>
+        <td>
+            <a th:href="@{/ui/events/{id}/edit(id=${item.id})}">Edit</a>
+            <form th:action="@{/ui/events/{id}/delete(id=${item.id})}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
