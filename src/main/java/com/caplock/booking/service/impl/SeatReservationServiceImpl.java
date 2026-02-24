@@ -1,8 +1,8 @@
 package com.caplock.booking.service.impl;
 
 import com.caplock.booking.entity.TicketType;
-import com.caplock.booking.entity.dto.BookingRequestDTO;
 import com.caplock.booking.entity.dto.EventTicketConfigDto;
+import com.caplock.booking.entity.dto.TicketSelectionDTO;
 import com.caplock.booking.event.PaymentSucceededEvent;
 import com.caplock.booking.service.BookingService;
 import com.caplock.booking.service.EventService;
@@ -144,7 +144,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
     }
 
 
-    public Pair<Boolean, String> assignSeatsTemp(BookingRequestDTO.TicketSelectionDTO seatConf, long bookingId) {
+    public Pair<Boolean, String> assignSeatsTemp(TicketSelectionDTO seatConf, long bookingId) {
         var ticketConf = eventTicketConfigService.getById(seatConf.getTicketConfigId()).orElseThrow(); // not proper exception
         var listOfSeats = List.of(Pair.with(seatConf.getSeat(), ticketConf.getTicketType()));
         return assignSeatsTemp(ticketConf.getEventId(), listOfSeats, bookingId);

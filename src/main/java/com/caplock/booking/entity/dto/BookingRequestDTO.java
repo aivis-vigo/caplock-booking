@@ -13,10 +13,4 @@ public class BookingRequestDTO {
     private String discountCode;
     private List<TicketSelectionDTO> tickets;
     private PaymentMethodEnum paymentMethod;
-
-    @Data
-    public static class TicketSelectionDTO {
-        private Long ticketConfigId;
-        private String seat;
-    }
 }

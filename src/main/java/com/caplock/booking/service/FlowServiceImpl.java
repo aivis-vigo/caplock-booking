@@ -37,7 +37,7 @@ public class FlowServiceImpl implements FlowService {
         // TODO: fetch logged in users information from spring to assign userId
         Long userId = (long) 111;
 
-        List<BookingRequestDTO.TicketSelectionDTO> tickets = request.getTickets();
+        List<TicketSelectionDTO> tickets = request.getTickets();
         BigDecimal totalPrice = tickets.stream()
                 .map(ticket -> eventTicketConfigRepository.findById(ticket.getTicketConfigId())
                         .orElseThrow(() -> new EntityNotFoundException("Ticket config not found: " + ticket.getTicketConfigId()))
@@ -58,7 +58,7 @@ public class FlowServiceImpl implements FlowService {
         BookingDto bookingDetails = bookingService.createNewBooking(newBooking);
 
         // temp. assign selected seatsList<BookingRequestDTO.TicketSelectionDTO> tickets = request.getTickets();
-        for (var ticket : tickets) {
+        for (TicketSelectionDTO ticket : tickets) {
             var result = seatReservationServiceImpl.assignSeatsTemp(ticket, bookingDetails.getId());
             if (!result.getValue0())
                 log.error("Failed to assign seat {} for ticket config id {}", ticket.getSeat(), ticket.getTicketConfigId());
