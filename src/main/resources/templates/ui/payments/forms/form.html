@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Payment')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <div class="page-header">
+        <h1 th:text="${item.id == null} ? 'New Payment' : 'Edit Payment'">Payment</h1>
+        <a class="btn btn-ghost" th:href="@{/ui/payments}">Back</a>
+    </div>
+
+    <div class="card">
+        <form class="form-grid full" th:action="@{${formAction}}" th:object="${item}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Booking Id</label>
+                    <input type="number" th:field="*{bookingId}"/>
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="text" th:field="*{amount}"/>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Status</label>
+                    <input type="text" th:field="*{status}"/>
+                </div>
+                <div class="form-group">
+                    <label>Method</label>
+                    <input type="text" th:field="*{method}"/>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Transaction Id</label>
+                    <input type="text" th:field="*{transactionId}"/>
+                </div>
+                <div class="form-group">
+                    <label>Provider Response</label>
+                    <input type="text" th:field="*{providerResponse}"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Paid At (ISO)</label>
+                <input type="text" th:field="*{paidAt}" placeholder="2025-01-01T10:00:00"/>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Save</button>
+                <a class="btn btn-ghost" th:href="@{/ui/payments}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

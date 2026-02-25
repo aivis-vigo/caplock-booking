@@ -1,36 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Bookings</title>
-</head>
+<head th:replace="~{fragments/layout :: head('Bookings')}"></head>
 <body>
-<h1>Bookings</h1>
-<p><a th:href="@{/ui/bookings/new}">Create Booking</a></p>
-<table>
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Event Id</th>
-        <th>User Id</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${items}">
-        <td th:text="${item.id}">1</td>
-        <td th:text="${item.eventId}">1</td>
-        <td th:text="${item.userId}">1</td>
-        <td th:text="${item.status}">Processed</td>
-        <td>
-            <a th:href="@{/ui/bookings/{id}/edit(id=${item.id})}">Edit</a>
-            <form th:action="@{/ui/bookings/{id}/delete(id=${item.id})}" method="post">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <div class="page-header">
+        <h1>Bookings</h1>
+        <a class="btn btn-primary" th:href="@{/ui/bookings/new}">+ Create Booking</a>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Event Id</th>
+                <th>User Id</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.id}">1</td>
+                <td th:text="${item.eventId}">1</td>
+                <td th:text="${item.userId}">1</td>
+                <td>
+                    <span class="badge badge-blue" th:text="${item.status}">Processed</span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a class="btn btn-edit" th:href="@{/ui/bookings/{id}/edit(id=${item.id})}">Edit</a>
+                        <form th:action="@{/ui/bookings/{id}/delete(id=${item.id})}" method="post">
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${items == null or #lists.isEmpty(items)}">
+                <td class="empty" colspan="5">No bookings yet.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
 </body>
 </html>

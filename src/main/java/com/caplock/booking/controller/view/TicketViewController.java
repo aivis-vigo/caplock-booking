@@ -24,7 +24,7 @@ public class TicketViewController {
     public String createForm(Model model) {
         model.addAttribute("item", new TicketDto());
         model.addAttribute("formAction", "/ui/tickets");
-        return "ui/tickets/form";
+        return "ui/tickets/forms/form";
     }
 
     @PostMapping
@@ -38,7 +38,7 @@ public class TicketViewController {
         TicketDto dto = ticketService.getById(id).orElseThrow();
         model.addAttribute("item", dto);
         model.addAttribute("formAction", "/ui/tickets/" + id);
-        return "ui/tickets/form";
+        return "ui/tickets/forms/form";
     }
 
     @PostMapping("/{id}")

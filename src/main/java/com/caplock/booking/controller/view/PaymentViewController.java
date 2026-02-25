@@ -23,7 +23,7 @@ public class PaymentViewController {
     public String createForm(Model model) {
         model.addAttribute("item", new PaymentDto());
         model.addAttribute("formAction", "/ui/payments");
-        return "ui/payments/form";
+        return "ui/payments/forms/form";
     }
 
     @PostMapping
@@ -37,7 +37,7 @@ public class PaymentViewController {
         PaymentDto dto = paymentService.getById(id).orElseThrow();
         model.addAttribute("item", dto);
         model.addAttribute("formAction", "/ui/payments/" + id);
-        return "ui/payments/form";
+        return "ui/payments/forms/form";
     }
 
     @PostMapping("/{id}")

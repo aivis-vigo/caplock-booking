@@ -26,7 +26,7 @@ public class EventViewController {
     public String createForm(Model model) {
         model.addAttribute("item", new EventDto());
         model.addAttribute("formAction", "/ui/events");
-        return "ui/events/form";
+        return "ui/events/forms/form";
     }
 
     @PostMapping
@@ -40,7 +40,7 @@ public class EventViewController {
         EventDto dto = eventService.getById(id).orElseThrow();
         model.addAttribute("item", dto);
         model.addAttribute("formAction", "/ui/events/" + id);
-        return "ui/events/form";
+        return "ui/events/forms/form";
     }
 
     @GetMapping("/{id}")

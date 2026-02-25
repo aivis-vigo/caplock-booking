@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -67,6 +68,30 @@ public class SpringSecurityConf {
                                 "/ui/auth/**",
                                 "/h2-console/**")
                         .permitAll()
+                        .requestMatchers("/ui/users/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,
+                                "/ui/events/new", "/ui/events/*/edit",
+                                "/ui/bookings/new", "/ui/bookings/*/edit",
+                                "/ui/tickets/new", "/ui/tickets/*/edit",
+                                "/ui/invoices/new", "/ui/invoices/*/edit",
+                                "/ui/payments/new", "/ui/payments/*/edit",
+                                "/ui/event-ticket-configs/new", "/ui/event-ticket-configs/*/edit",
+                                "/ui/booking-items/new", "/ui/booking-items/*/edit",
+                                "/ui/users/new", "/ui/users/*/edit")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,
+                                "/ui/events", "/ui/events/*", "/ui/events/*/delete",
+                                "/ui/bookings", "/ui/bookings/*", "/ui/bookings/*/delete",
+                                "/ui/tickets", "/ui/tickets/*", "/ui/tickets/*/delete",
+                                "/ui/invoices", "/ui/invoices/*", "/ui/invoices/*/delete",
+                                "/ui/payments", "/ui/payments/*", "/ui/payments/*/delete",
+                                "/ui/event-ticket-configs", "/ui/event-ticket-configs/*", "/ui/event-ticket-configs/*/delete",
+                                "/ui/booking-items", "/ui/booking-items/*", "/ui/booking-items/*/delete",
+                                "/ui/users", "/ui/users/*", "/ui/users/*/delete")
+                        .hasRole("ADMIN")
+                        .requestMatchers("/ui/events/**", "/ui/bookings/**", "/ui/tickets/**")
+                        .hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .formLogin(form -> form
@@ -75,7 +100,9 @@ public class SpringSecurityConf {
                         .permitAll()
                 )
                 .logout(logout -> logout
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/ui/auth/login?logout")
+                        .permitAll()
                         .deleteCookies("jwt")
                 )
                 .rememberMe(rm -> rm

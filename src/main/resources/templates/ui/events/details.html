@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${event.title} + ' - Event Details'">Event Details</title>
-</head>
+<head th:replace="~{fragments/layout :: head(${event.title})}"></head>
 <body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
 
-<div class="container">
+<main class="card">
 
     <!-- Event Header -->
     <div class="event-header">
@@ -294,5 +292,6 @@
     }
 </script>
 
+</main>
 </body>
 </html>

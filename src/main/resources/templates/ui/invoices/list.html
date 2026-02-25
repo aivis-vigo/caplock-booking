@@ -1,36 +1,47 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Invoices</title>
-</head>
+<head th:replace="~{fragments/layout :: head('Invoices')}"></head>
 <body>
-<h1>Invoices</h1>
-<p><a th:href="@{/ui/invoices/new}">Create Invoice</a></p>
-<table>
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Booking Id</th>
-        <th>Invoice Number</th>
-        <th>Total Amount</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${items}">
-        <td th:text="${item.id}">1</td>
-        <td th:text="${item.bookingId}">1</td>
-        <td th:text="${item.invoiceNumber}">INV-0001</td>
-        <td th:text="${item.totalAmount}">0.00</td>
-        <td>
-            <a th:href="@{/ui/invoices/{id}/edit(id=${item.id})}">Edit</a>
-            <form th:action="@{/ui/invoices/{id}/delete(id=${item.id})}" method="post">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <div class="page-header">
+        <h1>Invoices</h1>
+        <a class="btn btn-primary" th:href="@{/ui/invoices/new}">+ Create Invoice</a>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Booking Id</th>
+                <th>Invoice Number</th>
+                <th>Total Amount</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.id}">1</td>
+                <td th:text="${item.bookingId}">1</td>
+                <td th:text="${item.invoiceNumber}">INV-0001</td>
+                <td th:text="${item.totalAmount}">0.00</td>
+                <td>
+                    <div class="btn-group">
+                        <a class="btn btn-edit" th:href="@{/ui/invoices/{id}/edit(id=${item.id})}">Edit</a>
+                        <form th:action="@{/ui/invoices/{id}/delete(id=${item.id})}" method="post">
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${items == null or #lists.isEmpty(items)}">
+                <td class="empty" colspan="5">No invoices yet.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
 </body>
 </html>

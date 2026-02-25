@@ -5,7 +5,9 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
         Throwable cause = authException.getCause();
         if (isJwtAuthenticationError(authException, cause)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "401 Unauthorized: " + authException.getMessage());
-        } else if (authException instanceof BadCredentialsException) {
+        } else if (authException instanceof BadCredentialsException || authException instanceof InsufficientAuthenticationException) {
             response.sendError(HttpServletResponse.SC_NON_AUTHORITATIVE_INFORMATION, "203 Non-Authoritative Information: " + authException.getMessage());
         } else {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "500 Problem with request: " + authException.getMessage());
@@ -35,6 +37,8 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
         if (cause instanceof JwtException) {
             return true;
         }
+
+        // Check the exception class name as fallback for authorization errors
         return authException.getClass().getSimpleName().contains("Jwt")
                 || authException.getClass().getSimpleName().contains("Authorization");
     }

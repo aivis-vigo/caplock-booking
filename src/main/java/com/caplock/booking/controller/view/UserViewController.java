@@ -23,7 +23,7 @@ public class UserViewController {
     public String createForm(Model model) {
         model.addAttribute("item", new UserDto());
         model.addAttribute("formAction", "/ui/users");
-        return "ui/users/form";
+        return "ui/users/forms/form";
     }
 
     @PostMapping
@@ -37,7 +37,7 @@ public class UserViewController {
         UserDto dto = userService.getById(id).orElseThrow();
         model.addAttribute("item", dto);
         model.addAttribute("formAction", "/ui/users/" + id);
-        return "ui/users/form";
+        return "ui/users/forms/form";
     }
 
     @PostMapping("/{id}")

@@ -47,7 +47,8 @@
             text-decoration: none;
             letter-spacing: .5px;
         }
-        nav.app-nav a {
+        nav.app-nav a,
+        nav.app-nav button.nav-link {
             color: #c7d2fe;
             text-decoration: none;
             font-size: .875rem;
@@ -55,9 +56,15 @@
             padding: .25rem .5rem;
             border-radius: 4px;
             transition: color .15s, background .15s;
+            background: transparent;
+            border: none;
+            cursor: pointer;
         }
         nav.app-nav a:hover,
-        nav.app-nav a.active { color: #fff; background: rgba(255,255,255,.1); }
+        nav.app-nav a.active,
+        nav.app-nav button.nav-link:hover { color: #fff; background: rgba(255,255,255,.1); }
+
+        nav.app-nav .nav-spacer { flex: 1; }
 
         /* ---- MAIN CONTENT ---- */
         main { padding: 2rem; max-width: 1200px; margin: 0 auto; }
@@ -183,11 +190,15 @@
 
 <!-- ===== SHARED NAV ===== -->
 <nav th:fragment="nav" class="app-nav">
-    <a class="brand" th:href="@{/events/}">&#9673; Caplock</a>
-    <a th:href="@{/events/}">Events</a>
-    <a th:href="@{/bookings/}">Bookings</a>
-    <a th:href="@{/tickets/}">Tickets</a>
-    <a th:href="@{/user/all}">Users</a>
+    <a class="brand" th:href="@{/ui/events}">Caplock</a>
+    <a th:href="@{/ui/events}">Events</a>
+    <a th:href="@{/ui/bookings}">Bookings</a>
+    <a th:href="@{/ui/tickets}">Tickets</a>
+    <a th:href="@{/ui/users}">Users</a>
+    <span class="nav-spacer"></span>
+    <form th:action="@{/ui/auth/logout}" action="logout" method="post">
+        <button class="nav-link" type="submit">Logout</button>
+    </form>
 </nav>
 
 </html>

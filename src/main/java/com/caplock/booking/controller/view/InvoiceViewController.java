@@ -23,7 +23,7 @@ public class InvoiceViewController {
     public String createForm(Model model) {
         model.addAttribute("item", new InvoiceDto());
         model.addAttribute("formAction", "/ui/invoices");
-        return "ui/invoices/form";
+        return "ui/invoices/forms/form";
     }
 
     @PostMapping
@@ -37,7 +37,7 @@ public class InvoiceViewController {
         InvoiceDto dto = invoiceService.getById(id).orElseThrow();
         model.addAttribute("item", dto);
         model.addAttribute("formAction", "/ui/invoices/" + id);
-        return "ui/invoices/form";
+        return "ui/invoices/forms/form";
     }
 
     @PostMapping("/{id}")
