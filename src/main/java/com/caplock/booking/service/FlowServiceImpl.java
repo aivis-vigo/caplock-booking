@@ -2,7 +2,6 @@ package com.caplock.booking.service;
 
 import com.caplock.booking.entity.StatusBookingEnum;
 import com.caplock.booking.entity.StatusPaymentEnum;
-import com.caplock.booking.entity.TicketType;
 import com.caplock.booking.entity.dto.*;
 import com.caplock.booking.exception.SeatNotAssignedException;
 import com.caplock.booking.repository.EventTicketConfigRepository;

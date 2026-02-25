@@ -25,11 +25,7 @@ public class TicketRepositoryTest {
     @BeforeEach
     void init() {
         TicketEntity ticket = new TicketEntity();
-        ticket.setTicketType(TicketType.STANDARD);
         ticket.setTicketCode("Basic Show");
-        ticket.setSection("A");
-        ticket.setRow("1C");
-        ticket.setSeatNumber("4");
         ticket.setHolderName("Walter White");
         ticket.setHolderEmail("heisenberg@example.com");
         ticket.setIssuedAt(LocalDateTime.now());
@@ -49,11 +45,7 @@ public class TicketRepositoryTest {
     @Test
     public void TicketRepository_findByHolderName_returnsHoldersTickets() {
         TicketEntity ticket2 = new TicketEntity();
-        ticket2.setTicketType(TicketType.VIP);
         ticket2.setTicketCode("High-end Show");
-        ticket2.setSection("C");
-        ticket2.setRow("13B");
-        ticket2.setSeatNumber("12");
         ticket2.setHolderName("Jesse Pinkman");
         ticket2.setHolderEmail("jessepinkman@example.com");
         ticket2.setIssuedAt(LocalDateTime.now());
@@ -76,11 +68,7 @@ public class TicketRepositoryTest {
     @Test
     public void TicketRepository_updateTicketInformation_ticketUpdatedSuccessfully() {
         TicketEntity ticket2 = new TicketEntity();
-        ticket2.setTicketType(TicketType.STANDARD);
         ticket2.setTicketCode("Basic Show");
-        ticket2.setSection("A");
-        ticket2.setRow("1C");
-        ticket2.setSeatNumber("4");
         ticket2.setHolderName("Hank Schrader");
         ticket2.setHolderEmail("hankschrader@dea.gov");
         ticket2.setIssuedAt(LocalDateTime.now());
@@ -100,11 +88,7 @@ public class TicketRepositoryTest {
     @Test
     public void TicketRepository_deleteTicket_ticketDeletedSuccessfully() {
         TicketEntity ticket2 = new TicketEntity();
-        ticket2.setTicketType(TicketType.STANDARD);
         ticket2.setTicketCode("Basic Show");
-        ticket2.setSection("A");
-        ticket2.setRow("1C");
-        ticket2.setSeatNumber("4");
         ticket2.setHolderName("Hank Schrader");
         ticket2.setHolderEmail("hankschrader@dea.gov");
         ticket2.setIssuedAt(LocalDateTime.now());
