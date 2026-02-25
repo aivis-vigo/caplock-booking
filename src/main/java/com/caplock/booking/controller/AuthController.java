@@ -14,17 +14,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
-@RestController
+@Controller
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
@@ -60,7 +61,10 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestParam String email, @RequestParam String password, @RequestParam String confirmAdminCode, @RequestParam String name) {
+    public ResponseEntity<Void> signup(@RequestParam String email,
+                                       @RequestParam String password,
+                                       @RequestParam String confirmAdminCode,
+                                       @RequestParam String name) {
         UserRole role = UserRole.USER;
         if ("admin123".equals(confirmAdminCode)) {
             role = UserRole.ADMIN;
@@ -77,9 +81,13 @@ public class AuthController {
                     null,
                     null);
             userService.create(user);
-            return "success";
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                    .location(URI.create("/ui/auth/login?registered"))
+                    .build();
         }
-        return "error";
+        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .location(URI.create("/ui/auth/register?error=exists"))
+                .build();
 
     }
 

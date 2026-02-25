@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import static io.jsonwebtoken.security.Keys.hmacShaKeyFor;
 @Slf4j
 @Service
 public class JwtService {
+    @Getter
     @Value("${jwt.expiration}")
     private int jwtExpiration;
     @Value("${jwt.secret}")
@@ -29,10 +31,6 @@ public class JwtService {
     @PostConstruct
     void init() {
         key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public int getJwtExpiration() {
-        return jwtExpiration;
     }
 
     public Claims parse(String token) {
