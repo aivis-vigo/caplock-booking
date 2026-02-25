@@ -1,5 +1,6 @@
 package com.caplock.booking.entity.dto;
 
+import com.caplock.booking.entity.PaymentMethodEnum;
 import lombok.Data;
 
 import java.util.List;
@@ -7,11 +8,9 @@ import java.util.List;
 @Data
 public class BookingRequestDTO {
     private Long eventId;
+    private String holderName;
+    private String holderEmail;
+    private String discountCode;
     private List<TicketSelectionDTO> tickets;
-
-    @Data
-    public static class TicketSelectionDTO {
-        private Long ticketConfigId;
-        private String seat;
-    }
+    private PaymentMethodEnum paymentMethod;
 }

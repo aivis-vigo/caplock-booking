@@ -12,7 +12,9 @@ import lombok.Setter;
 @Getter
 public class CreateTicketDTO {
 
-    private TicketType ticketType;
+    private Long bookingId;
+    private Long bookingItemId;
+    private Long eventId;
 
     private String event;
 

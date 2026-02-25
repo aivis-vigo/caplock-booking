@@ -1,16 +1,11 @@
 package com.caplock.booking.controller;
 
 import com.caplock.booking.entity.dto.BookingDto;
-import com.caplock.booking.entity.dto.BookingRequestDTO;
-import com.caplock.booking.entity.dto.TicketDto;
 import com.caplock.booking.service.BookingService;
-import com.caplock.booking.service.FlowService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,10 +26,10 @@ public class BookingController {
         return bookingService.getAll();
     }
 
-    @PostMapping
-    public ResponseEntity<BookingDto> create(@RequestBody BookingDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(dto, new ArrayList<>()).getValue0().get()); // Optional check needed here
-    }
+//    @PostMapping
+//    public ResponseEntity<BookingDto> create(@RequestBody BookingDto dto) {
+//        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(dto, new ArrayList<>()).getValue0().get()); // Optional check needed here
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<BookingDto> update(@PathVariable Long id, @RequestBody BookingDto dto) {

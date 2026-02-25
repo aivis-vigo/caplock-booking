@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!--
 <head th:replace="~{fragments/layout :: head('Events')}"></head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
@@ -15,6 +16,181 @@
             <thead>
             <tr>
                 <th>Id</th>
+-->
+<head>
+    <meta charset="UTF-8">
+    <title>Events</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 48px auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #1a1a1a;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+
+        .btn:hover {
+            background: #333;
+        }
+
+        .table-wrapper {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #fafafa;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        tbody td {
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .title-link {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .title-link:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 3px 10px;
+            border-radius: 4px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-link {
+            font-size: 13px;
+            color: #555;
+            text-decoration: none;
+            padding: 4px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 5px;
+            transition: border-color 0.15s, color 0.15s;
+        }
+
+        .action-link:hover {
+            border-color: #888;
+            color: #1a1a1a;
+        }
+
+        .delete-form {
+            margin: 0;
+        }
+
+        .delete-btn {
+            font-size: 13px;
+            color: #b00020;
+            background: none;
+            border: 1px solid #f5c2c7;
+            border-radius: 5px;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+            font-family: inherit;
+        }
+
+        .delete-btn:hover {
+            border-color: #b00020;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="page-header">
+        <h1>Events</h1>
+        <a class="btn" th:href="@{/ui/events/new}">+ Create Event</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
                 <th>Title</th>
                 <th>Start Time</th>
                 <th>Status</th>

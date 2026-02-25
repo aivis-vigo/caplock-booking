@@ -222,29 +222,27 @@ public class DataSeeder implements CommandLineRunner {
         ticket1.setBookingId(booking.getId());
         ticket1.setBookingItemId(item.getId());
         ticket1.setEventId(event1.getId());
-        ticket1.setTicketType(TicketType.VIP);
-        ticket1.setTicketCode(event1.getTitle());
+        ticket1.setTicketCode(null);
         ticket1.setSeat("A");
         ticket1.setHolderName(user.getName());
         ticket1.setHolderEmail(user.getEmailHash());
         ticket1.setDiscountCode("WELCOME10");
         ticket1.setStatus(StatusTicketEnum.Issued);
         ticket1.setIssuedAt(now.minusDays(1));
-        ticket1.setQrCodeUrl("/uploads/qr/" + UUID.randomUUID() + ".png");
+        ticket1.setQrCodePath("uploads/qr/" + UUID.randomUUID() + ".png");
 
         TicketEntity ticket2 = new TicketEntity();
         ticket2.setBookingId(booking.getId());
         ticket2.setBookingItemId(item.getId());
         ticket2.setEventId(event1.getId());
-        ticket2.setTicketType(TicketType.VIP);
-        ticket2.setTicketCode(event1.getTitle());
+        ticket2.setTicketCode(null);
         ticket1.setSeat("A");
         ticket2.setHolderName(user.getName());
         ticket2.setHolderEmail(user.getEmailHash());
         ticket2.setDiscountCode("WELCOME10");
         ticket2.setStatus(StatusTicketEnum.Issued);
         ticket2.setIssuedAt(now.minusDays(1));
-        ticket2.setQrCodeUrl("/uploads/qr/" + UUID.randomUUID() + ".png");
+        ticket2.setQrCodePath("uploads/qr/" + UUID.randomUUID() + ".png");
 
         ticketRepository.saveAll(List.of(ticket1, ticket2));
 

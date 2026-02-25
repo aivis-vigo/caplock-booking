@@ -10,6 +10,7 @@ public interface TicketService {
     TicketDto create(CreateTicketDTO dto);
     Optional<TicketDto> getById(Long id);
     List<TicketDto> findAll();
+    List<TicketDto> findByBookingId(Long bookingId);
     TicketDto update(Long id, TicketDto dto);
     boolean deleteById(Long id);
     List<TicketDto> findByHolderName(String holderName);

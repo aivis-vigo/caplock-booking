@@ -25,7 +25,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
-    private final BookingItemService bookingItemService;
     private final ModelMapperConfig modelMapper;
 
 
@@ -35,33 +34,14 @@ public class BookingServiceImpl implements BookingService {
         BookingEntity booking = modelMapper.modelMapper().map(bookingDTO, BookingEntity.class);
 
         booking.setStatus(StatusBookingEnum.WAITING_PAYMENT);
+        booking.setDiscountCode(bookingDTO.getDiscountCode());
         booking.setConfirmationCode(UUID.randomUUID().toString());
-        booking.setCreatedAt(LocalDateTime.now());
-        booking.setUpdatedAt(LocalDateTime.now());
 
         BookingEntity savedBooking = bookingRepository.save(booking);
 
         log.info("Booking created successfully — id={}", booking.getId());
 
         return modelMapper.modelMapper().map(savedBooking, BookingDto.class);
-    }
-
-    @Transactional
-    @Override
-    public Triplet<Optional<BookingDto>, Boolean, String> create(BookingDto dto, List<BookingItemDto> items) {
-        if (dto.getId() != null && bookingRepository.existsById(dto.getId()))
-            return Triplet.with(Optional.empty(), false, "Booking already exists");
-
-        BookingEntity entity = Mapper.toEntity(dto);
-        entity.setId(null);
-        BookingEntity saved = bookingRepository.save(entity);
-
-        for (BookingItemDto item : items) {
-            item.setBookingId(saved.getId());
-            bookingItemService.create(item);
-        }
-
-        return Triplet.with(Optional.of(Mapper.toDto(saved)), true, "OK");
     }
 
     @Override

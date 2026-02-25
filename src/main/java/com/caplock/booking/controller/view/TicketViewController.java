@@ -20,6 +20,12 @@ public class TicketViewController {
         return "ui/tickets/list";
     }
 
+    @GetMapping("/booking/{bookingId}")
+    public String getTicketsByBookingId(@PathVariable Long bookingId, Model model) {
+        model.addAttribute("tickets", ticketService.findByBookingId(bookingId));
+        return "ui/tickets/confirmation";
+    }
+
     @GetMapping("/new")
     public String createForm(Model model) {
         model.addAttribute("item", new TicketDto());

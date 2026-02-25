@@ -21,16 +21,7 @@ public class TicketEntity {
     private Long id;
 
     @Column(unique = true)
-    private String ticketNumber;
-
-    @PrePersist
-    private void generateTicketNumber() {
-        if (this.ticketNumber == null) {
-            this.ticketNumber = UUID.randomUUID().toString();
-        }
-    }
-
-    private String qrCode;
+    private String ticketNumber = UUID.randomUUID().toString();
 
     @Column(name = "booking_id")
     private Long bookingId;
@@ -40,10 +31,6 @@ public class TicketEntity {
 
     @Column(name = "event_id")
     private Long eventId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ticket_type")
-    private TicketType ticketType;
 
     @Column(name = "ticket_code")
     private String ticketCode;
@@ -61,14 +48,14 @@ public class TicketEntity {
     private String discountCode;
 
     @Enumerated(EnumType.STRING)
-    private StatusTicketEnum status;
+    private StatusTicketEnum status = StatusTicketEnum.Issued;
 
     @Column(name = "issued_at")
-    private LocalDateTime issuedAt;
+    private LocalDateTime issuedAt = LocalDateTime.now();
 
     @Column(name = "scanned_at")
     private LocalDateTime scannedAt;
 
-    @Column(name = "qr_code_url")
-    private String qrCodeUrl;
+    @Column(name = "qr_code_path")
+    private String qrCodePath;
 }

@@ -26,11 +26,11 @@ public class BookingViewController {
         return "ui/bookings/forms/form";
     }
 
-    @PostMapping
-    public String create(@ModelAttribute("item") BookingDto dto) {
-        bookingService.create(dto, null);
-        return "redirect:/ui/bookings";
-    }
+//    @PostMapping
+//    public String create(@ModelAttribute("item") BookingDto dto) {
+//        bookingService.create(dto, null);
+//        return "redirect:/ui/bookings";
+//    }
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {

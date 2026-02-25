@@ -209,7 +209,6 @@ public final class Mapper {
         dto.setBookingId(entity.getBookingId());
         dto.setBookingItemId(entity.getBookingItemId());
         dto.setEventId(entity.getEventId());
-        dto.setTicketType(entity.getTicketType());
         dto.setTicketCode(entity.getTicketCode());
         dto.setSeat("A");
         dto.setHolderName(entity.getHolderName());
@@ -218,7 +217,7 @@ public final class Mapper {
         dto.setStatus(entity.getStatus());
         dto.setIssuedAt(entity.getIssuedAt());
         dto.setScannedAt(entity.getScannedAt());
-        dto.setQrCodeUrl(entity.getQrCodeUrl());
+        dto.setQrCodePath(entity.getQrCodePath());
         return dto;
     }
 
@@ -229,7 +228,6 @@ public final class Mapper {
         entity.setBookingId(dto.getBookingId());
         entity.setBookingItemId(dto.getBookingItemId());
         entity.setEventId(dto.getEventId());
-        entity.setTicketType(dto.getTicketType());
         entity.setTicketCode(dto.getTicketCode());
         entity.setSeat("A");
         entity.setHolderName(dto.getHolderName());
@@ -238,7 +236,7 @@ public final class Mapper {
         entity.setStatus(dto.getStatus());
         entity.setIssuedAt(dto.getIssuedAt());
         entity.setScannedAt(dto.getScannedAt());
-        entity.setQrCodeUrl(dto.getQrCodeUrl());
+        entity.setQrCodePath(dto.getQrCodePath());
         return entity;
     }
 

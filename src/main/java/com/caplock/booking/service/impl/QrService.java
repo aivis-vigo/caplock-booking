@@ -52,7 +52,7 @@ public class QrService {
         Files.write(filePath, qrBytes);
 
         log.info("QR code saved to: {}", filePath);
-        return filePath.toString();
+        return "/" + filePath.toString().replace("\\", "/");
     }
 
     public String decodeQRCode(MultipartFile file) throws IOException, NotFoundException {

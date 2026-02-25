@@ -1,6 +1,197 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head(${event.title})}"></head>
+<!-- <head th:replace="~{fragments/layout :: head(${event.title})}"></head> -->
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${event.title} + ' - Event Details'">Event Details</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 48px auto;
+            padding: 0 24px;
+        }
+
+        /* Event header */
+        .event-header {
+            margin-bottom: 24px;
+        }
+
+        .event-header h1 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .event-header .badge,
+        .event-header .category {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 3px 10px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .event-header .badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .event-header .category {
+            background: #eeeeee;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+
+        /* Event info */
+        .event-info {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+        }
+
+        .event-info p {
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        .event-info p:last-child { margin-bottom: 0; }
+
+        /* Booking section */
+        .booking-section {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 28px 32px;
+        }
+
+        .booking-section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1a1a1a;
+            background: #fff;
+            transition: border-color 0.15s;
+            appearance: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #888;
+        }
+
+        /* Ticket rows */
+        .ticket-row {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .ticket-row h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 12px;
+        }
+
+        /* Total summary */
+        #totalSummary {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        #totalSummary p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        #totalSummary strong {
+            display: block;
+            margin-top: 10px;
+            font-size: 15px;
+        }
+
+        /* Submit */
+        button[type="submit"] {
+            width: 100%;
+            padding: 11px;
+            background: #1a1a1a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 4px;
+        }
+
+        button[type="submit"]:hover:not(:disabled) {
+            background: #333;
+        }
+
+        button[type="submit"]:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #e8e8e8;
+            margin: 20px 0;
+        }
+    </style>
+</head>
 <body>
 <nav th:replace="~{fragments/layout :: nav}"></nav>
 
@@ -40,11 +231,24 @@
         <form th:action="@{/api/v1/handle-booking}" method="post">
             <input type="hidden" name="eventId" th:value="${event.id}">
 
-            <!-- How many tickets -->
+            <!-- Holder info -->
+            <div class="form-group">
+                <label for="holderName">Full Name</label>
+                <input type="text" id="holderName" name="holderName" placeholder="John Doe"/>
+            </div>
+
+            <div class="form-group">
+                <label for="holderEmail">Email</label>
+                <input type="email" id="holderEmail" name="holderEmail" placeholder="john@example.com"/>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Ticket quantity -->
             <div class="form-group">
                 <label for="quantity">Number of Tickets</label>
                 <select id="quantity" onchange="onQuantityChange()">
-                    <option value="">-- How many tickets? --</option>
+                    <option value="">-- Select quantity --</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -56,9 +260,27 @@
             <!-- Per-ticket rows injected here -->
             <div id="ticketRows"></div>
 
+            <hr class="divider">
+
+            <!-- Discount & payment -->
+            <div class="form-group">
+                <label for="discountCode">Discount Code <span style="font-weight:400;color:#aaa;">(optional)</span></label>
+                <input type="text" id="discountCode" name="discountCode" placeholder="e.g. WNTR-15"/>
+            </div>
+
+            <div class="form-group">
+                <label for="paymentMethod">Payment Method</label>
+                <select id="paymentMethod" name="paymentMethod">
+                    <option
+                            th:each="option : ${paymentMethodOptions}"
+                            th:value="${option.name()}"
+                            th:text="${option.getLabel()}">
+                    </option>
+                </select>
+            </div>
+
             <!-- Total Summary -->
             <div id="totalSummary" style="display:none">
-                <hr>
                 <div id="totalLines"></div>
                 <strong>Total: $<span id="totalAmount">0.00</span></strong>
             </div>
