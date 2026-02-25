@@ -6,6 +6,7 @@ import com.caplock.booking.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,18 +18,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class FlowController {
 
     private final FlowService flowService;
+    private final TicketService ticketService;
 
     @PostMapping
-    public String handleBooking(@ModelAttribute BookingRequestDTO request) {
+    public String handleBooking(@ModelAttribute BookingRequestDTO request, Model model) {
         log.info("Started processing booking with id: {}", request.getEventId());
 
         try {
-            flowService.handleBooking(request);
+            Long bookingId = flowService.handleBooking(request);
+            model.addAttribute("tickets", ticketService.findByBookingId(bookingId));
+            return "/ui/tickets/confirmation";
         } catch (SeatNotAssignedException e) {
-            log.error(e.getMessage());
+            log.error("Seat assignment failed for event {}: {}", request.getEventId(), e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
+            return "redirect:/ui/bookings";
         }
-
-        return "redirect:/ui/bookings";
     }
 
 }

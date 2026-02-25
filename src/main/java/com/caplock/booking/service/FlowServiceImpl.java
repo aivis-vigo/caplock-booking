@@ -30,11 +30,8 @@ public class FlowServiceImpl implements FlowService {
     private final EventTicketConfigRepository eventTicketConfigRepository;
 
     @Override
-    public void handleBooking(BookingRequestDTO request) throws SeatNotAssignedException {
-        // TODO: validations
-
+    public Long handleBooking(BookingRequestDTO request) throws SeatNotAssignedException {
         // create new booking using information provided from the event booking form
-        // TODO: fetch logged in users information from spring to assign userId
         Long userId = (long) 111;
 
         List<TicketSelectionDTO> tickets = request.getTickets();
@@ -63,16 +60,13 @@ public class FlowServiceImpl implements FlowService {
             if (!result.getValue0()) throw new SeatNotAssignedException("Failed to assign seat");
         }
 
-        // TODO: 5. handle payment
-        // TODO on success -> status changes to CONFIRMED
-        // TODO on fail -> status changes to FAILED or CANCELED
         String transactionId = "1558df5-8c9b-4e7a-9c3a-2b1e5f6a7b8c";
 
         var paymentDto = paymentService.create(new PaymentDto(
                 null,
                 bookingDetails.getId(),
                 totalPrice,
-                StatusPaymentEnum.PENDING,
+                StatusPaymentEnum.PAID, // TODO: replace with real payment processing
                 request.getPaymentMethod().toString(),
                 transactionId,
                 "OK",
@@ -81,14 +75,13 @@ public class FlowServiceImpl implements FlowService {
         ));
 
         if (paymentDto.getStatus().equals(StatusPaymentEnum.PAID)) {
-            //Thread.currentThread().wait(1000);
-
             log.info("Seat: {}", tickets.getFirst().getSeat());
 
-            // TODO: 6. generate tickets
             for (var ticket : tickets) {
                 CreateTicketDTO newTicket = new CreateTicketDTO(
-                        TicketType.VIP,
+                        bookingDetails.getId(),
+                        ticket.getTicketConfigId(),
+                        bookingDetails.getEventId(),
                         evenDetails.getTitle(),
                         ticket.getSeat(),
                         request.getHolderName(),
@@ -98,7 +91,6 @@ public class FlowServiceImpl implements FlowService {
                 ticketService.create(newTicket);
             }
 
-            // TODO: 7. generate invoice
             var invoice = invoiceService.generateInvoiceFromForm(new InvoiceFormDto(
                     bookingDetails.getId(),
                     totalPrice,
@@ -109,11 +101,14 @@ public class FlowServiceImpl implements FlowService {
 
             bookingDetails.setStatus(StatusBookingEnum.DONE);
             bookingService.update(bookingDetails.getId(), bookingDetails);
+
+            return bookingDetails.getId();
         } else {
             // Show error message to user and redirect to booking page
             log.error("Payment failed for booking id: {}, payment id: {}", bookingDetails.getId(), paymentDto.getId());
             bookingDetails.setStatus(StatusBookingEnum.CANCELLED);
             bookingService.update(bookingDetails.getId(), bookingDetails);
+            return null;
         }
     }
 
