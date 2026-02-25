@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+<h1>Register</h1>
+<form action="/api/v1/auth/signup" method="post">
+    <label>Name
+        <input type="text" name="name" required>
+    </label>
+    <br>
+    <label>Email
+        <input type="email" name="email" required>
+    </label>
+    <br>
+    <label>Password
+        <input type="password" name="password" required>
+    </label>
+    <br>
+    <label>Admin code (optional)
+        <input type="text" name="confirmAdminCode">
+    </label>
+    <br>
+    <button type="submit">Create account</button>
+</form>
+
+<p><a href="/ui/auth/login">Back to login</a></p>
+</body>
+</html>

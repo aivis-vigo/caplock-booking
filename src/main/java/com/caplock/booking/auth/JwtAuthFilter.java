@@ -1,60 +1,69 @@
 package com.caplock.booking.auth;
 
+import com.caplock.booking.service.IUserService;
 import com.caplock.booking.service.JwtService;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
-
-    private final JwtService jwtService;
-
-    public JwtAuthFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private IUserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws ServletException, IOException {
 
-        String header = req.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
+        String token = Optional.ofNullable(WebUtils.getCookie(req, "jwt"))
+                .map(c -> c.getValue())
+                .orElseGet(() -> {
+                    String header = req.getHeader(HttpHeaders.AUTHORIZATION);
+                    if (header != null && header.startsWith("Bearer ")) {
+                        return header.substring(7);
+                    }
+                    return null;
+                });
+
+        if (token == null) {
             chain.doFilter(req, res);
             return;
         }
 
-        String token = header.substring(7);
-
         try {
-            Claims claims = jwtService.parse(token);
-            String username = claims.getSubject();
-            @SuppressWarnings("unchecked")
-            List<String> roles = (List<String>) claims.getOrDefault("roles", List.of());
 
-            var authorities = roles.stream()
-                    .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r)
-                    .map(SimpleGrantedAuthority::new)
-                    .toList();
 
-            var auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            if (jwtService.validateToken(token)) {
+                final String userEmail = jwtService.getUserNameFromToken(token);
+                final UserDetails userDetails = userService.loadUserByUsername(userEmail);
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
+                log.debug("JWT authentication succeed: {}", userEmail);
+            }
         } catch (Exception e) {
-            // invalid token -> clear context (optionally send 401)
+            log.error("JWT authentication failed: {}", e.getMessage());
             SecurityContextHolder.clearContext();
         }
-
         chain.doFilter(req, res);
     }
 

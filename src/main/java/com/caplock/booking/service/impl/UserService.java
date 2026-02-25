@@ -6,6 +6,10 @@ import com.caplock.booking.repository.IUserRepository;
 import com.caplock.booking.service.IUserService;
 import com.caplock.booking.util.Mapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,5 +46,26 @@ public class UserService implements IUserService {
     @Override
     public void delete(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<UserDto> findByEmailHash(String email) {
+        return userRepository.findByEmailHash(email).map(Mapper::toDto);
+    }
+
+    @Override
+    public boolean existsByEmailHash(String email) {
+        return userRepository.existsByEmailHash(email);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity user= userRepository.findByEmailHash(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+        return new User(
+                user.getEmailHash(),
+                user.getPasswordHash(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+        );
     }
 }

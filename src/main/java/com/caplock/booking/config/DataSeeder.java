@@ -1,5 +1,6 @@
 package com.caplock.booking.config;
 
+import com.caplock.booking.controller.AuthController;
 import com.caplock.booking.entity.StatusBookingEnum;
 import com.caplock.booking.entity.StatusEventEnum;
 import com.caplock.booking.entity.StatusPaymentEnum;
@@ -53,6 +54,7 @@ public class DataSeeder implements CommandLineRunner {
     private final TicketRepository ticketRepository;
     private final ModelMapper modelMapper;
     private final SeatReservationService seatReservationService;
+    private final AuthController authController;
 
     @Override
     public void run(String... args) {
@@ -63,7 +65,11 @@ public class DataSeeder implements CommandLineRunner {
 
         LocalDateTime now = LocalDateTime.now();
 
-        UserEntity admin = new UserEntity();
+
+        authController.signup("admin@example.com", "admin123", "admin123", "Admin User");
+        authController.signup("jane.doe@example.com", "password123", "", "Jane Doe");
+
+/*        UserEntity admin = new UserEntity();
         admin.setName("Admin User");
         admin.setEmailHash("admin@example.com");
         admin.setPasswordHash("admin123");
@@ -77,9 +83,10 @@ public class DataSeeder implements CommandLineRunner {
         user.setPasswordHash("password123");
         user.setRole(UserRole.USER);
         user.setCreatedAt(now.minusDays(5));
-        user.setNotificationToken("mock-token-user");
+        user.setNotificationToken("mock-token-user");*/
 
-        userRepository.saveAll(List.of(admin, user));
+        var admin = userRepository.findByEmailHash("admin@example.com").get();
+        var user =  userRepository.findByEmailHash("jane.doe@example.com").get();
 
         EventEntity event1 = new EventEntity();
         event1.setTitle("Caplock Live");
@@ -106,7 +113,6 @@ public class DataSeeder implements CommandLineRunner {
         event2.setCreatedBy(admin.getId());
         event2.setStatus(StatusEventEnum.New);
         event2.setCategory("Education");
-
 
 
         eventRepository.saveAll(List.of(event1, event2));
