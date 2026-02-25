@@ -1,8 +1,7 @@
 package com.caplock.booking.service.impl;
 
-import com.caplock.booking.entity.StatusTicketEnum;
+import com.caplock.booking.config.ModelMapperConfig;
 import com.caplock.booking.entity.dto.CreateTicketDTO;
-import com.caplock.booking.entity.dto.Response;
 import com.caplock.booking.entity.dto.TicketDto;
 
 import com.caplock.booking.entity.dao.TicketEntity;
@@ -12,10 +11,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +25,7 @@ public class TicketServiceImpl implements TicketService {
     private final TicketRepository ticketRepository;
     private final ModelMapper modelMapper;
     private final QrService qrService;
+    final ModelMapperConfig mapperConfig;
 
     @Override
     public List<TicketDto> findAll() {
@@ -53,35 +52,37 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public List<TicketDto> findByBookingId(Long bookingId) {
+        List<TicketEntity> entities = ticketRepository.findByBookingId(bookingId);
+        log.info("findByBookingId({}) — found {} ticket(s)", bookingId, entities.size());
+        entities.forEach(t -> log.info("  ticket id={} bookingId={} seat={}", t.getId(), t.getBookingId(), t.getSeat()));
+        return entities.stream()
+                .map(ticket -> mapperConfig.modelMapper().map(ticket, TicketDto.class))
+                .toList();
+    }
+
+    @Override
     public TicketDto create(CreateTicketDTO newTicket) {
         log.info("Creating ticket for holder: {}", newTicket.getHolderName());
 
-        TicketEntity fullTicketInfo = new TicketEntity();
-        fullTicketInfo.setTicketType(newTicket.getTicketType());
-        fullTicketInfo.setTicketCode(newTicket.getEvent());
-        fullTicketInfo.setSeat(newTicket.getSeat());
-        fullTicketInfo.setHolderName(newTicket.getHolderName());
-        fullTicketInfo.setHolderEmail(newTicket.getHolderEmail());
-        fullTicketInfo.setDiscountCode(newTicket.getDiscountCode());
-        fullTicketInfo.setIssuedAt(LocalDateTime.now());
-        fullTicketInfo.setStatus(StatusTicketEnum.Issued);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        TicketEntity fullTicketInfo = mapperConfig.modelMapper()
+                .map(newTicket, TicketEntity.class);
 
         TicketEntity savedTicket = ticketRepository.save(fullTicketInfo);
 
         try {
             String qrPath = qrService.generateAndSave(savedTicket.getTicketNumber(), savedTicket.getTicketNumber());
-            savedTicket.setQrCode(qrPath);
+            savedTicket.setQrCodePath(qrPath);
             ticketRepository.save(savedTicket);
             log.info("QR code saved to: {}", qrPath);
         } catch (Exception e) {
             log.error("Failed to generate QR code for ticket: {}", savedTicket.getTicketNumber(), e);
         }
 
-        log.info("Ticket created with id: {}", savedTicket.getId());
+        log.info("Ticket created with id={} bookingId={}", savedTicket.getId(), savedTicket.getBookingId());
 
-        TicketDto ticketDTO = modelMapper.map(savedTicket, TicketDto.class);
-
-        return ticketDTO;
+        return modelMapper.map(savedTicket, TicketDto.class);
     }
 
     @Override

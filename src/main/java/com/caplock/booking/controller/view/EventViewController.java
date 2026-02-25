@@ -1,5 +1,6 @@
 package com.caplock.booking.controller.view;
 
+import com.caplock.booking.entity.PaymentMethodEnum;
 import com.caplock.booking.entity.dto.EventDetailsDto;
 import com.caplock.booking.entity.dto.EventDto;
 import com.caplock.booking.service.EventService;
@@ -51,6 +52,7 @@ public class EventViewController {
         model.addAttribute("event", response.getEvent());
         model.addAttribute("ticketConfig", response.getTicketConfig());
         model.addAttribute("freeSeats", response.getFreeSeats());
+        model.addAttribute("paymentMethodOptions", PaymentMethodEnum.values());
 
         return "/ui/events/details";
     }

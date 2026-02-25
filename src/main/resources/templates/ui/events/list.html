@@ -3,34 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <title>Events</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 48px auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #1a1a1a;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+
+        .btn:hover {
+            background: #333;
+        }
+
+        .table-wrapper {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #fafafa;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        tbody td {
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .title-link {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .title-link:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 3px 10px;
+            border-radius: 4px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-link {
+            font-size: 13px;
+            color: #555;
+            text-decoration: none;
+            padding: 4px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 5px;
+            transition: border-color 0.15s, color 0.15s;
+        }
+
+        .action-link:hover {
+            border-color: #888;
+            color: #1a1a1a;
+        }
+
+        .delete-form {
+            margin: 0;
+        }
+
+        .delete-btn {
+            font-size: 13px;
+            color: #b00020;
+            background: none;
+            border: 1px solid #f5c2c7;
+            border-radius: 5px;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+            font-family: inherit;
+        }
+
+        .delete-btn:hover {
+            border-color: #b00020;
+        }
+    </style>
 </head>
 <body>
-<h1>Events</h1>
-<p><a th:href="@{/ui/events/new}">Create Event</a></p>
-<table>
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Title</th>
-        <th>Start Time</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${items}">
-        <td th:text="${item.id}">1</td>
-        <td th:text="${item.title}">Title</td>
-        <td th:text="${item.startTime}">2025-01-01T10:00:00</td>
-        <td th:text="${item.status}">New</td>
-        <td>
-            <a th:href="@{/ui/events/{id}/edit(id=${item.id})}">Edit</a>
-            <form th:action="@{/ui/events/{id}/delete(id=${item.id})}" method="post">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+
+<div class="container">
+
+    <div class="page-header">
+        <h1>Events</h1>
+        <a class="btn" th:href="@{/ui/events/new}">+ Create Event</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Start Time</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}" th:data-href="@{/ui/events/{id}(id=${item.id})}" class="clickable-row">
+                <td th:text="${item.id}">1</td>
+                <td><a class="title-link" th:href="@{/ui/events/{id}(id=${item.id})}" th:text="${item.title}"
+                       onclick="event.stopPropagation()">Title</a></td>
+                <td th:text="${#temporals.format(item.startTime, 'dd MMM yyyy, HH:mm')}">2025-01-01 10:00</td>
+                <td><span class="badge" th:text="${item.status}">New</span></td>
+                <td>
+                    <div class="actions" onclick="event.stopPropagation()">
+                        <a class="action-link" th:href="@{/ui/events/{id}/edit(id=${item.id})}">Edit</a>
+                        <form class="delete-form" th:action="@{/ui/events/{id}/delete(id=${item.id})}" method="post">
+                            <button class="delete-btn" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', () => {
+            window.location.href = row.dataset.href;
+        });
+    });
+</script>
+
 </body>
 </html>

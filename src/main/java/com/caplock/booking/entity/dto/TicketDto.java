@@ -27,5 +27,5 @@ public class TicketDto {
     private StatusTicketEnum status;
     private LocalDateTime issuedAt;
     private LocalDateTime scannedAt;
-    private String qrCodeUrl;
+    private String qrCodePath;
 }
