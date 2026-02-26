@@ -26,12 +26,12 @@ public class FlowServiceImpl implements FlowService {
     private final TicketService ticketService;
     private final InvoiceService invoiceService;
     private final EventTicketConfigRepository eventTicketConfigRepository;
+    private final UserService userService;
 
     @Override
-    public Long handleBooking(BookingRequestDTO request) throws SeatNotAssignedException {
+    public Long handleBooking(BookingRequestDTO request, String userEmail) throws SeatNotAssignedException {
         // create new booking using information provided from the event booking form
-        Long userId = (long) 111;
-
+        long userId = userService.getUserIdByEmail(userEmail);
         List<TicketSelectionDTO> tickets = request.getTickets();
         BigDecimal totalPrice = tickets.stream()
                 .map(ticket -> eventTicketConfigRepository.findById(ticket.getTicketConfigId())

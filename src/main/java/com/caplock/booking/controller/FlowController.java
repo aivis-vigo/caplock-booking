@@ -5,6 +5,8 @@ import com.caplock.booking.exception.SeatNotAssignedException;
 import com.caplock.booking.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,7 +26,9 @@ public class FlowController {
     public String handleBooking(@ModelAttribute BookingRequestDTO request, Model model) {
         log.info("Started processing booking with id: {}", request.getEventId());
         try {
-            Long bookingId = flowService.handleBooking(request);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = auth.getName();
+            Long bookingId = flowService.handleBooking(request, userEmail );
             model.addAttribute("tickets", ticketService.findByBookingId(bookingId));
             return "/ui/tickets/confirmation";
         } catch (SeatNotAssignedException e) {
