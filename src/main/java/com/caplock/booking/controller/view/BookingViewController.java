@@ -23,7 +23,7 @@ public class BookingViewController {
     public String createForm(Model model) {
         model.addAttribute("item", new BookingDto());
         model.addAttribute("formAction", "/ui/bookings");
-        return "ui/bookings/forms/form";
+        return "ui/bookings/form";
     }
 
 //    @PostMapping
@@ -37,7 +37,7 @@ public class BookingViewController {
         BookingDto dto = bookingService.getById(id).orElseThrow();
         model.addAttribute("item", dto);
         model.addAttribute("formAction", "/ui/bookings/" + id);
-        return "ui/bookings/forms/form";
+        return "ui/bookings/form";
     }
 
     @PostMapping("/{id}")
