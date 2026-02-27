@@ -57,11 +57,11 @@ The app uses an **H2 in-memory database** — no setup required. The schema is a
 
 Access the H2 console at **http://localhost:8080/h2-console**
 
-| Field    | Value                |
-|----------|----------------------|
-| JDBC URL | `jdbc:h2:mem:testdb` |
-| Username | `sa`                 |
-| Password | *(leave blank)*      |
+| Field    | Value                   |
+|----------|----------------------   |
+| JDBC URL | `jdbc:h2:mem:bookingdb` |
+| Username | `sa`                    |
+| Password | *(leave blank)*         |
 
 ## Configuration
 
@@ -71,7 +71,7 @@ Key settings in `src/main/resources/application.properties`:
 |---|---|---|
 | `server.port` | `8080` | HTTP port |
 | `spring.h2.console.enabled` | `true` | Enables H2 web console |
-| `spring.jpa.hibernate.ddl-auto` | `create` | Recreates schema on startup |
+| `spring.jpa.hibernate.ddl-auto` | `update` | Recreates schema on startup |
 | `qr.storage.path` | `uploads/qr-codes` | Directory for generated QR images |
 | `jwt.secret` | *(dev secret)* | JWT signing key — change in production |
 
@@ -79,23 +79,29 @@ Key settings in `src/main/resources/application.properties`:
 
 ```
 src/main/java/com/caplock/booking/
+|-- auth/
 ├── config/          # Security, web MVC, and mapper config
-├── controller/      # Web controllers (events, bookings, users, tickets, QR, etc.)
+├── controller/ # Web controllers (events, bookings, users, tickets, QR, etc.)
+    |-- view/    
 ├── entity/
 │   ├── dao/         # JPA entities / data access objects
 │   └── dto/         # Data transfer objects
 ├── repository/      # Spring Data repositories
 ├── service/         # Business logic
+    |--impl/    
 ├── util/            # DTO mappers and utilities
 └── exception/       # Custom exceptions
 
 src/main/resources/
 ├── templates/       # Thymeleaf HTML templates
+    |-- fragments/
+    |-- ui/
 ├── static/          # CSS, JS, images
 ├── application.properties
 └── log4j2.xml
 
 uploads/qr-codes/    # Generated QR code images
+invoices/
 logs/                # Rolling application logs
 ```
 
