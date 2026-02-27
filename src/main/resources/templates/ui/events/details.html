@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- <head th:replace="~{fragments/layout :: head(${event.title})}"></head> -->
-<head>
+<head th:replace="~{fragments/layout :: head(${event.title})}">
     <meta charset="UTF-8">
     <title th:text="${event.title} + ' - Event Details'">Event Details</title>
     <style>
@@ -193,9 +192,10 @@
     </style>
 </head>
 <body>
-<nav th:replace="~{fragments/layout :: nav}"></nav>
+
 
 <main class="card">
+    <nav th:replace="~{fragments/layout :: nav}"></nav>
 
     <!-- Event Header -->
     <div class="event-header">

@@ -222,7 +222,7 @@ public class SeatReservationServiceImpl implements SeatReservationService {
         if (seatMap == null) return List.of();
 
         return seatMap.entrySet().stream()
-                .filter(e -> e.getValue().bookingId() == -1)
+                .filter(e -> e.getValue().bookingId() == -1 && e.getValue().eventId() == -1)
                 .map(e -> Pair.with(e.getKey(), e.getValue().seatType()))
                 .toList();
     }

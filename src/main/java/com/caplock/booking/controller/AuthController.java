@@ -66,7 +66,7 @@ public class AuthController {
                                        @RequestParam String confirmAdminCode,
                                        @RequestParam String name) {
         UserRole role = UserRole.USER;
-        if ("admin123".equals(confirmAdminCode)) {
+        if ("pB:r6z,r)1E*{8-8:$(@[%V!g5r<M".equals(confirmAdminCode)) {
             role = UserRole.ADMIN;
         }
 

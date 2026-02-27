@@ -66,7 +66,7 @@ public class DataSeeder implements CommandLineRunner {
         LocalDateTime now = LocalDateTime.now();
 
 
-        authController.signup("admin@example.com", "admin123", "admin123", "Admin User");
+        authController.signup("admin@example.com", "admin123", "pB:r6z,r)1E*{8-8:$(@[%V!g5r<M", "Admin User");
         authController.signup("jane.doe@example.com", "password123", "", "Jane Doe");
 
 /*        UserEntity admin = new UserEntity();

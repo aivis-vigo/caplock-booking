@@ -15,35 +15,47 @@
             <thead>
             <tr>
                 <th>Id</th>
+                <th>Event Title</th>
+                <th>Event Description</th>
                 <th>Event Id</th>
                 <th>User Id</th>
+                <th>User Email</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="item : ${items}">
-                <td th:text="${item.id}">1</td>
-                <td th:text="${item.eventId}">1</td>
-                <td th:text="${item.userId}">1</td>
+                <td th:text="${item.bookingDto.id}">1</td>
+                <td th:text="${item.eventDto.title}">1</td>
+                <td th:text="${item.eventDto.description}">1</td>
+                <td th:text="${item.bookingDto.eventId}">1</td>
+                <td th:text="${item.bookingDto.userId}">1</td>
+                <td th:text="${item.userEmail}">1</td>
                 <td>
-                    <span class="badge badge-blue" th:text="${item.status}">Processed</span>
+                    <span class="badge badge-blue" th:text="${item.bookingDto.status}">Processed</span>
                 </td>
                 <td>
                     <div class="btn-group">
-                        <a class="btn btn-edit" th:href="@{/ui/bookings/{id}/edit(id=${item.id})}">Edit</a>
-                        <form th:action="@{/ui/bookings/{id}/delete(id=${item.id})}" method="post">
+                        <a class="btn btn-edit" th:href="@{/ui/bookings/{id}/edit(id=${item.bookingDto.id})}">Edit</a>
+                        <form th:action="@{/ui/bookings/{id}/delete(id=${item.bookingDto.id})}" method="post">
                             <button class="btn btn-danger" type="submit">Delete</button>
                         </form>
                     </div>
                 </td>
             </tr>
             <tr th:if="${items == null or #lists.isEmpty(items)}">
-                <td class="empty" colspan="5">No bookings yet.</td>
+                <td class="empty" colspan="8">No bookings yet.</td>
             </tr>
             </tbody>
         </table>
     </div>
 </main>
+<script th:inline="javascript">
+    let errorMessage = [[${errorMessage}]];
+    if (errorMessage != null) {
+        alert(errorMessage);
+    }
+</script>
 </body>
 </html>

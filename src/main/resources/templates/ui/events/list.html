@@ -1,23 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!--
-<head th:replace="~{fragments/layout :: head('Events')}"></head>
-<body>
-<nav th:replace="~{fragments/layout :: nav}"></nav>
-
-<main>
-    <div class="page-header">
-        <h1>Events</h1>
-        <a class="btn btn-primary" th:href="@{/ui/events/new}">+ Create Event</a>
-    </div>
-
-    <div class="card">
-        <table>
-            <thead>
-            <tr>
-                <th>Id</th>
--->
-<head>
+<head th:replace="~{fragments/layout :: head('Events')}">
     <meta charset="UTF-8">
     <title>Events</title>
     <style>
@@ -178,46 +161,48 @@
     </style>
 </head>
 <body>
+<main>
+    <nav th:replace="~{fragments/layout :: nav}"></nav>
+    <div class="container">
 
-<div class="container">
+        <div class="page-header">
+            <h1>Events</h1>
+            <a class="btn" th:href="@{/ui/events/new}">+ Create Event</a>
+        </div>
 
-    <div class="page-header">
-        <h1>Events</h1>
-        <a class="btn" th:href="@{/ui/events/new}">+ Create Event</a>
-    </div>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Start Time</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${items}">
-                <td th:text="${item.id}">1</td>
-                <td th:text="${item.title}">Title</td>
-                <td th:text="${item.startTime}">2025-01-01T10:00:00</td>
-                <td><span class="badge badge-blue" th:text="${item.status}">New</span></td>
-                <td>
-                    <div class="btn-group">
-                        <a class="btn btn-view" th:href="@{/ui/events/{id}(id=${item.id})}">View</a>
-                        <a class="btn btn-edit" th:href="@{/ui/events/{id}/edit(id=${item.id})}">Edit</a>
-                        <form th:action="@{/ui/events/{id}/delete(id=${item.id})}" method="post">
-                            <button class="btn btn-danger" type="submit">Delete</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            <tr th:if="${items == null or #lists.isEmpty(items)}">
-                <td class="empty" colspan="5">No events yet.</td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Start Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${items}">
+                    <td th:text="${item.id}">1</td>
+                    <td th:text="${item.title}">Title</td>
+                    <td th:text="${item.startTime}">2025-01-01T10:00:00</td>
+                    <td><span class="badge badge-blue" th:text="${item.status}">New</span></td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-view" th:href="@{/ui/events/{id}(id=${item.id})}">View</a>
+                            <a class="btn btn-edit" th:href="@{/ui/events/{id}/edit(id=${item.id})}">Edit</a>
+                            <form th:action="@{/ui/events/{id}/delete(id=${item.id})}" method="post">
+                                <button class="btn btn-danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${items == null or #lists.isEmpty(items)}">
+                    <td class="empty" colspan="5">No events yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 </body>
