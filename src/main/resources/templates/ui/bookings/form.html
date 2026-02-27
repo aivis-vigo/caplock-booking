@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Booking')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <div class="page-header">
+        <h1 th:text="${item.id == null} ? 'New Booking' : 'Edit Booking'">Booking</h1>
+        <a class="btn btn-ghost" th:href="@{/ui/bookings}">Back</a>
+    </div>
+
+    <div class="card">
+        <form class="form-grid full" th:action="@{${formAction}}" th:object="${item}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="form-group">
+                <label>Confirmation Code</label>
+                <input type="text" th:field="*{confirmationCode}"/>
+            </div>
+
+            <div class="form-group">
+                <label>Event Id</label>
+                <input type="number" th:field="*{eventId}"/>
+            </div>
+
+            <div class="form-group">
+                <label>User Id</label>
+                <input type="number" th:field="*{userId}"/>
+            </div>
+
+            <div class="form-group">
+                <label>Total Price</label>
+                <input type="text" th:field="*{totalPrice}"/>
+            </div>
+
+            <div class="form-group">
+                <label>Discount Code</label>
+                <input type="text" th:field="*{discountCode}"/>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <input type="text" th:field="*{status}"/>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Save</button>
+                <a class="btn btn-ghost" th:href="@{/ui/bookings}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

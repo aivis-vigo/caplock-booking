@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Event')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <div class="page-header">
+        <h1 th:text="${item.id == null} ? 'New Event' : 'Edit Event'">Event</h1>
+        <a class="btn btn-ghost" th:href="@{/ui/events}">Back</a>
+    </div>
+
+    <div class="card">
+        <form class="form-grid full" th:action="@{${formAction}}" th:object="${item}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" th:field="*{title}"/>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" th:field="*{category}"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea th:field="*{description}"></textarea>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" th:field="*{location}"/>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <input type="text" th:field="*{status}"/>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Start Time (ISO)</label>
+                    <input type="text" th:field="*{startTime}" placeholder="2025-01-01T10:00:00"/>
+                </div>
+                <div class="form-group">
+                    <label>End Time (ISO)</label>
+                    <input type="text" th:field="*{endTime}" placeholder="2025-01-01T12:00:00"/>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Booking Open At (ISO)</label>
+                    <input type="text" th:field="*{bookingOpenAt}" placeholder="2024-12-25T09:00:00"/>
+                </div>
+                <div class="form-group">
+                    <label>Booking Deadline (ISO)</label>
+                    <input type="text" th:field="*{bookingDeadline}" placeholder="2024-12-31T23:59:59"/>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Save</button>
+                <a class="btn btn-ghost" th:href="@{/ui/events}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

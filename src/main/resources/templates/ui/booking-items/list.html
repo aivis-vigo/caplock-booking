@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Booking Items')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <div class="page-header">
+        <h1>Booking Items</h1>
+        <a class="btn btn-primary" th:href="@{/ui/booking-items/new}">+ Create Item</a>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Booking Id</th>
+                <th>Ticket Type</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.id}">1</td>
+                <td th:text="${item.bookingId}">1</td>
+                <td th:text="${item.ticketType}">STANDARD</td>
+                <td th:text="${item.quantity}">1</td>
+                <td>
+                    <div class="btn-group">
+                        <a class="btn btn-edit" th:href="@{/ui/booking-items/{id}/edit(id=${item.id})}">Edit</a>
+                        <form th:action="@{/ui/booking-items/{id}/delete(id=${item.id})}" method="post">
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${items == null or #lists.isEmpty(items)}">
+                <td class="empty" colspan="5">No booking items yet.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
