@@ -28,9 +28,10 @@ public class BookingViewController {
     @GetMapping
     public String list(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         String userEmail = auth.getName();
         long userId = userService.getUserIdByEmail(userEmail);
-        var bookingDtos = bookingService.getAll().stream().filter(x -> x.getId() == userId).toList();
+        var bookingDtos = bookingService.getAll().stream().filter(x -> x.getUserId() == userId).toList();
 
         var beObjects = new ArrayList<BookingEventRowDto>();
 

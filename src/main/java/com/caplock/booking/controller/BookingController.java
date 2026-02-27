@@ -2,8 +2,11 @@ package com.caplock.booking.controller;
 
 import com.caplock.booking.entity.dto.BookingDto;
 import com.caplock.booking.service.BookingService;
+import com.caplock.booking.service.impl.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<BookingDto> getById(@PathVariable Long id) {
@@ -23,7 +27,11 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAll() {
-        return bookingService.getAll();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = auth.getName();
+        long userId = userService.getUserIdByEmail(userEmail);
+        return bookingService.getAll().stream().filter(x->x.getUserId()==userId).toList();
     }
 
 //    @PostMapping
